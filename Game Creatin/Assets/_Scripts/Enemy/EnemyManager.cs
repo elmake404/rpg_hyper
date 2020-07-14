@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -12,7 +11,6 @@ public class EnemyManager : MonoBehaviour
     private List<string> _enemyControls = new List<string>();
     [SerializeField]
     private List<HeroControl> _listHero = new List<HeroControl>();
-    private List<EnemyControl> _listEnemyControls = new List<EnemyControl>();
     private Dictionary<string, GameObject> _enemies = new Dictionary<string, GameObject>();
     private Dictionary<string, int> _enemiesCount = new Dictionary<string, int>();
 
@@ -100,7 +98,7 @@ public class EnemyManager : MonoBehaviour
         HeroControl heroControl = null;
         float Magnitude = float.PositiveInfinity;
 
-        for (int i = 0; i < _listHero.Count-1; i++)
+        for (int i = 0; i < _listHero.Count; i++)
         {
             List<HexagonControl> listHex = new List<HexagonControl>();
             listHex.AddRange(hexagon.GetWay(_listHero[i].HexagonMain()));
@@ -124,7 +122,7 @@ public class EnemyManager : MonoBehaviour
         HeroControl heroControl = null;
         float Magnitude = float.PositiveInfinity;
 
-        for (int i = 0; i < _listHero.Count-1; i++)
+        for (int i = 0; i < _listHero.Count; i++)
         {
             float magnitude = 0;
 

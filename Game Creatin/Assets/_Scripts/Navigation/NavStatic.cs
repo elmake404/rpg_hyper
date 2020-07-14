@@ -6,7 +6,6 @@ public static class NavStatic
 {
     private static AlgorithmDijkstra _algorithmDijkstra = new AlgorithmDijkstra();
 
-
     private static List<HexagonControl> GetBending(List<HexagonControl> hexagonsBending, IMove EnemyTarget, IMove moveMain)// запускает алгоритм дейкстра и возвращает точки через которые надо пройти 
     {
         List<HexagonControl> bendingVertex = _algorithmDijkstra.Dijkstra(CreatingEdgeBending(hexagonsBending, EnemyTarget, moveMain));
@@ -271,8 +270,20 @@ public static class NavStatic
 
         List<HexagonControl> hexagonControls = new List<HexagonControl>();
         hexagonControls.AddRange(nitialPath);
-        hexagonControls.InsertRange(1, EmploymentCheckFly(new List<IMove>() { Collision }, EnemyTarget, out List<IMove> ListMoves, moveMain));
-        hexagonControls = GetBendingFly(hexagonControls, ListMoves, EnemyTarget);
+        List<HexagonControl> Employment = EmploymentCheckFly(new List<IMove>() { Collision }, EnemyTarget, out List<IMove> ListMoves, moveMain);
+
+        if (!EnemyTarget.FreeSpaceCheck(moveMain.IsFlight()) || Employment.Count >= 35
+        || (Employment.Count >= 25 && (EnemyTarget.HexagonMain().position - moveMain.HexagonMain().position).magnitude > 6.94f))
+        {
+            hexagonControls = null;
+        }
+        else
+        {
+            hexagonControls.InsertRange(1, Employment);
+            hexagonControls = GetBendingFly(hexagonControls, ListMoves, EnemyTarget);
+        }
+
+
 
         if (hexagonControls != null)
         {
@@ -292,24 +303,14 @@ public static class NavStatic
         {
             for (int j = i + 1; j < graph.Length; j++)
             {
-                bool IsElevation;
-
                 Vector2 StartPosition = graph[i].NodeHexagon.GetArrayElement().position;
                 Vector2 direction = graph[j].NodeHexagon.GetArrayElement().position;
 
                 bool NoRibs = false;
-                HexagonControl node = graph[j].NodeHexagon.GetHexagonMain();
 
                 if (!CollisionCheckElevationFly(StartPosition, direction, listHexagons[0], EnemyTarget, EnemyList))
                 {
                     NoRibs = true;
-                }
-
-                if (i == 0 && graph[j].NodeHexagon == listHexagons[listHexagons.Count - 1]&&!NoRibs)
-                {
-                    graph[i].NodeHexagon.Flag();
-                    graph[j].NodeHexagon.Flag();
-                    Debug.Log(EnemyList.Count);
                 }
 
                 if (!NoRibs)
@@ -319,19 +320,9 @@ public static class NavStatic
                 }
             }
         }
-        //List<Node> f = graph[0].IncidentNodes();
-        //foreach (var item in f)
-        //{
-        //    if (item.NodeHexagon == listHexagons[listHexagons.Count - 1])
-        //    {
-        //        item.NodeHexagon.Flag();
-        //        graph[0].NodeHexagon.Flag();
-        //        Debug.Log(123456);
-        //    }
-        //}
         return graph;
     }
-    public static bool CollisionCheckFly(Vector2 StartPos, Vector2 TargetPos, bool elevation, HexagonControl StartHex, IMove EnemyTarget, List<IMove> EnemyList,bool g)//возыращет true если на пути нет припятсвий не все враги препятсвие (пол)
+    public static bool CollisionCheckFly(Vector2 StartPos, Vector2 TargetPos, bool elevation, HexagonControl StartHex, IMove EnemyTarget, List<IMove> EnemyList, bool g)//возыращет true если на пути нет припятсвий не все враги препятсвие (пол)
     {
         HexagonControl[] controls;
         Vector2 currentVector = StartPos;
@@ -346,7 +337,7 @@ public static class NavStatic
                     continue;
                 }
 
-                if ((!controls[i].IsFreeFly) 
+                if ((!controls[i].IsFreeFly)
                     && (EnemyList.Contains(controls[i].ObjAboveFly)) && !controls[i].ObjAboveFly.IsGo())
                 {
                     return false;
@@ -399,8 +390,18 @@ public static class NavStatic
 
         List<HexagonControl> hexagonControls = new List<HexagonControl>();
         hexagonControls.AddRange(nitialPath);
-        hexagonControls.InsertRange(1, EmploymentCheck(new List<IMove>() { Collision }, EnemyTarget, out ListMoves, moveMain));
-        hexagonControls = GetBending(hexagonControls, ListMoves, EnemyTarget);
+        List<HexagonControl> Employment = EmploymentCheck(new List<IMove>() { Collision }, EnemyTarget, out ListMoves, moveMain);
+
+        if (!EnemyTarget.FreeSpaceCheck(moveMain.IsFlight()) || Employment.Count >= 35
+            || (Employment.Count >= 25 && (EnemyTarget.HexagonMain().position - moveMain.HexagonMain().position).magnitude > 6.94f))
+        {
+            hexagonControls = null;
+        }
+        else
+        {
+            hexagonControls.InsertRange(1, Employment);
+            hexagonControls = GetBending(hexagonControls, ListMoves, EnemyTarget);
+        }
 
         if (hexagonControls != null)
         {
@@ -549,11 +550,20 @@ public static class NavStatic
                     continue;
                 }
 
-                if ((!controls[i].FreedomTestType(elevation)) ||
-                    (!controls[i].IsFree) && (EnemyList.Contains(controls[i].ObjAbove)) && !controls[i].ObjAbove.IsGo())
+
+                if ((!controls[i].FreedomTestType(elevation)) /*||
+                    (!controls[i].IsFree) && (EnemyList.Contains(controls[i].ObjAbove)) && !controls[i].ObjAbove.IsGo()*/)
+                {
+
+                    return false;
+                }
+
+
+                if ((!controls[i].IsFree) && (EnemyList.Contains(controls[i].ObjAbove)) && !controls[i].ObjAbove.IsGo())
                 {
                     return false;
                 }
+
 
             }
             currentVector = Vector2.MoveTowards(currentVector, TargetPos, 0.4f);

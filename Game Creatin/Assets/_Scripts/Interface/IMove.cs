@@ -10,5 +10,7 @@ public interface IMove
     void StartWay(HexagonControl hexagonFinish, IMove EnemyTarget);
     bool IsGo();
     bool IsFlight();
+    bool FreeSpaceCheck(bool Flight);
+    HexagonControl HexagonMain();
     List<HexagonControl> GetSurroundingHexes();
 }

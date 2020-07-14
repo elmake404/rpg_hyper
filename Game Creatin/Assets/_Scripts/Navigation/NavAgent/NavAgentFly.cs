@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NavAgentFly : MonoBehaviour ,IMove
+public class NavAgentFly : MonoBehaviour, IMove
 {
     private List<HexagonControl> _wayList = new List<HexagonControl>();
     private HexagonControl _targetHexagon;
@@ -46,7 +46,7 @@ public class NavAgentFly : MonoBehaviour ,IMove
 
                 transform.position = Vector2.MoveTowards(transform.position, _targetHexagon.transform.position, _speedMove);
 
-                Vector2 NextPos = (Vector2)transform.position + (Vector2)(_targetHexagon.transform.position - transform.position).normalized * 1.8f;                
+                Vector2 NextPos = (Vector2)transform.position + (Vector2)(_targetHexagon.transform.position - transform.position).normalized * 1.8f;
 
                 Control.Collision(NextPos);
 
@@ -70,7 +70,7 @@ public class NavAgentFly : MonoBehaviour ,IMove
                 {
                     if (_wayList.Count > 0)
                     {
-                        HexagonControl hexagonNext =  _currentPos;
+                        HexagonControl hexagonNext = _currentPos;
                         IMove move = _currentPos.ObjAboveFly;
 
                         if ((move == null))
@@ -114,7 +114,7 @@ public class NavAgentFly : MonoBehaviour ,IMove
     {
         List<HexagonControl> Way;
 
-        Way = new List<HexagonControl>() {hexagonFinish };
+        Way = new List<HexagonControl>() { hexagonFinish };
 
         if (Way != null)
         {
@@ -127,11 +127,11 @@ public class NavAgentFly : MonoBehaviour ,IMove
     {
         List<HexagonControl> Way;
 
-        Way = new List<HexagonControl>() {Control.HexagonMain(), hexagonFinish };
+        Way = new List<HexagonControl>() { Control.HexagonMain(), hexagonFinish };
 
         if (Way != null)
         {
-            Way = NavStatic.PathCheckBypassFly(Way, Collision, EnemyTarget,this);
+            Way = NavStatic.PathCheckBypassFly(Way, Collision, EnemyTarget, this);
 
             if (Way.Count > 0)
             {
@@ -152,10 +152,10 @@ public class NavAgentFly : MonoBehaviour ,IMove
     public void StartWay(HexagonControl hexagonFinish, IMove EnemyTarget)
     {
         _wayList.Clear();
-       
+
         Way(hexagonFinish, EnemyTarget);
     }
-    public void StopMove( HexagonControl CollcionHex)
+    public void StopMove(HexagonControl CollcionHex)
     {
         _currentPos = CollcionHex;
         _isMove = false;
@@ -181,6 +181,39 @@ public class NavAgentFly : MonoBehaviour ,IMove
     public List<HexagonControl> GetSurroundingHexes()
     {
         return Control.GetSurroundingHexes();
+    }
+    public bool FreeSpaceCheck(bool Flight)
+    {
+        bool free = false;
+        List<HexagonControl> hexagons = Control.GetSurroundingHexes();
+        if (Flight)
+        {
+            for (int i = 0; i < hexagons.Count; i++)
+            {
+                if (hexagons[i].IsFreeFly)
+                {
+                    free = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < hexagons.Count; i++)
+            {
+                if (hexagons[i].IsFree)
+                {
+                    free = true;
+                    break;
+                }
+            }
+        }
+
+        return free;
+    }
+    public HexagonControl HexagonMain()
+    {
+        return Control.HexagonMain();
     }
 
     public bool IsFlight()

@@ -156,12 +156,12 @@ public class NavAgent : MonoBehaviour, IMove
     }
 
     #region interface 
-    public async void StartWay(HexagonControl hexagonFinish, IMove EnemyTarget)
+    public void StartWay(HexagonControl hexagonFinish, IMove EnemyTarget)
     {
         _wayList.Clear();
 
-        await Task.Run(() =>
-        Way(hexagonFinish, EnemyTarget));
+        
+        Way(hexagonFinish, EnemyTarget);
     }
     public void StopMove(HexagonControl CollcionHex)
     {
@@ -190,10 +190,42 @@ public class NavAgent : MonoBehaviour, IMove
     {
         return Control.GetSurroundingHexes();
     }
+    public bool FreeSpaceCheck(bool Flight)
+    {
+        bool free= false;
+        List<HexagonControl> hexagons = Control.GetSurroundingHexes();
+        if (Flight)
+        {
+            for (int i = 0; i < hexagons.Count; i++)
+            {
+                if (hexagons[i].IsFreeFly)
+                {
+                    free = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < hexagons.Count; i++)
+            {
+                if (hexagons[i].IsFree)
+                {
+                    free = true;
+                    break;
+                }
+            }
+        }
 
+        return free;
+    }
     public bool IsFlight()
     {
         return false;
+    }
+    public HexagonControl HexagonMain()
+    {
+        return Control.HexagonMain();
     }
     #endregion
 }

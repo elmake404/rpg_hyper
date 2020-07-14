@@ -173,13 +173,13 @@ public class MapControl : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                if (Layer == 12 && hexagons[i].gameObject.layer == 12)
-                {
-                    hexagons[i].Flag();
-                }
-            }
+            //else
+            //{
+            //    if (Layer == 12 && hexagons[i].gameObject.layer == 12)
+            //    {
+            //        hexagons[i].Flag();
+            //    }
+            //}
         }
 
         return hexagon;
@@ -282,12 +282,14 @@ public class MapControl : MonoBehaviour
         OwnershipCheck((int)Y, XInt, out Y, out XInt, Position);
 
         List<HexagonControl> hexagonsList = new List<HexagonControl>();
+
         if (Mathf.Abs((float)System.Math.Round((XInt - X), 2)) == 0.5f && XTarget == 0)
         {
             if (XInt <= 19)
             {
                 hexagonsList.Add(MapNav[(int)Y, XInt]);
             }
+
             if (XInt > 0 && (Position- MapNav[(int)Y, XInt - 1].position).magnitude<=1.8f)
             {
                 hexagonsList.Add(MapNav[(int)Y, XInt - 1]);
@@ -375,6 +377,7 @@ public class MapControl : MonoBehaviour
 
         return hexagon.GetHexagonMain();//нужный 6-ти угольник  
     }    
+
     #region Fly
     private static HexagonControl OwnershipCheckFly(int _row, int _column, Vector2 pos)
     {

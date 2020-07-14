@@ -6,6 +6,7 @@ using UnityEngine;
 public class EnemyControl : MonoBehaviour, IControl
 {
     private EnemyManager _enemyManager;
+    [SerializeField]
     private HexagonControl _hexagonMain;
 
     [SerializeField]
@@ -32,19 +33,6 @@ public class EnemyControl : MonoBehaviour, IControl
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            for (int i = 0; i < AnApproac.Count; i++)
-            {
-                if (AnApproac[i] == null)
-                {
-                    Debug.Log(i + " " + name);
-                    continue;
-                }
-                AnApproac[i].Flag();
-            }
-        }
-
         if (_healthPoints <= 0)
         {
             if (HeroTarget != null)
@@ -391,12 +379,10 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         CollisionMain(next);
     }
-
     public HexagonControl HexagonMain()
     {
         return _hexagonMain;
     }
-
     public IMove Target()
     {
         return HeroTarget.IMoveMain;
