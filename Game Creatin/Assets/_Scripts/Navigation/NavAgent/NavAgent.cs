@@ -223,6 +223,10 @@ public class NavAgent : MonoBehaviour, IMove
     {
         return false;
     }
+    public GameObject GetObjMain()
+    {
+        return gameObject;
+    }
     public HexagonControl HexagonMain()
     {
         return Control.HexagonMain();

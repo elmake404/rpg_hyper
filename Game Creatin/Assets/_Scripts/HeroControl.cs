@@ -6,11 +6,12 @@ public class HeroControl : MonoBehaviour, IControl
 {
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
-    private List<HexagonControl> _ListHexAgr= new List<HexagonControl>();
+    private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
+    private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
 
     [SerializeField]
-    private float _healthPoints, _attackPower, _atackDistens;
-    private float _atackDistensConst;
+    private float _healthPoints, _attackPower, _atackDistens, _powerRegeneration;
+    private float _atackDistensConst, _healthPointsConst, _regeneration;
 
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -28,6 +29,8 @@ public class HeroControl : MonoBehaviour, IControl
     private void Awake()
     {
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
+        _healthPointsConst = _healthPoints;
+        _regeneration = (_healthPointsConst * _powerRegeneration / 100f)/60;
         //_navigationHero.Control = this;
         IMoveMain = GetComponent<IMove>();
         IControlMain = this;
@@ -48,10 +51,23 @@ public class HeroControl : MonoBehaviour, IControl
         for (int i = 0; i < hits2D.Count; i++)
         {
             HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
-            if (hex.TypeHexagon!=1)
+            if (hex.TypeHexagon != 1)
             {
                 _ListHexAgr.Add(hex);
                 hex.ObjAgr = IMoveMain;
+            }
+        }
+
+        hits2D.Clear();
+        Physics2D.CircleCast(transform.position, _atackDistensConst, Vector2.zero, contactFilter2D, hits2D);
+
+        for (int i = 0; i < hits2D.Count; i++)
+        {
+            HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
+
+            if (((Vector2)transform.position - hex.position).magnitude <= _atackDistensConst)
+            {
+                _ListHexAtack.Add(hex);
             }
         }
 
@@ -72,6 +88,17 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
+        if (_healthPoints<_healthPointsConst)
+        {
+            _healthPoints += _regeneration;
+            if (_healthPoints > _healthPointsConst)
+            {
+                _healthPoints = _healthPointsConst;
+            }
+        }
+
+        EnemyTarget = EnemyChoice();
+
         if (EnemyTarget != null)
         {
             if (((Vector2)EnemyTarget.transform.position - (Vector2)transform.position).magnitude <= _atackDistensConst)
@@ -87,6 +114,21 @@ public class HeroControl : MonoBehaviour, IControl
                 }
             }
         }
+    }
+    private EnemyControl EnemyChoice()
+    {
+        for (int i = 0; i < _ListHexAtack.Count; i++)
+        {
+            if (_ListHexAtack[i].ObjAbove != null && _ListHexAtack[i].ObjAbove.GetObjMain().tag == "Enemy")
+            {
+                return _ListHexAtack[i].ObjAbove.GetObjMain().GetComponent<EnemyControl>();
+            }
+            if (_ListHexAtack[i].ObjAboveFly != null && _ListHexAtack[i].ObjAboveFly.GetObjMain().tag == "Enemy")
+            {
+                return _ListHexAtack[i].ObjAboveFly.GetObjMain().GetComponent<EnemyControl>();
+            }
+        }
+        return null;
     }
     private IEnumerator Atack()
     {

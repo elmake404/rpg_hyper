@@ -10,8 +10,8 @@ public class EnemyControl : MonoBehaviour, IControl
     private HexagonControl _hexagonMain;
 
     [SerializeField]
-    private float _healthPoints, _attackPower, _atackDistens;
-    private float _atackDistensConst;
+    private float _healthPoints, _attackPower, _atackDistens,_powerRegeneration;
+    private float _atackDistensConst, _healthPointsConst, _regeneration;
 
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
@@ -20,7 +20,7 @@ public class EnemyControl : MonoBehaviour, IControl
     [HideInInspector]
     public List<HeroControl> Pursuer = new List<HeroControl>();
 
-    //[HideInInspector]
+    [HideInInspector]
     public bool IsAttack;
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -28,6 +28,9 @@ public class EnemyControl : MonoBehaviour, IControl
     private void Awake()
     {
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
+        _healthPointsConst = _healthPoints;
+        _regeneration = (_healthPointsConst * _powerRegeneration / 100f) / 60;
+
         IMoveMain = GetComponent<IMove>();
         IControlMain = this;
     }
@@ -39,13 +42,25 @@ public class EnemyControl : MonoBehaviour, IControl
             {
                 HeroTarget.RemoveEnemy(this);
             }
-            _hexagonMain.Gap();
-            _hexagonMain.GapFly();
+            if (IMoveMain.IsFlight())
+                _hexagonMain.GapFly();
+            else
+                _hexagonMain.Gap();
+
             Destroy(gameObject);
         }
     }
     private void FixedUpdate()
     {
+        if (_healthPoints < _healthPointsConst)
+        {
+            _healthPoints += _regeneration;
+            if (_healthPoints > _healthPointsConst)
+            {
+                _healthPoints = _healthPointsConst;
+            }
+        }
+
         if (StaticLevelManager.IsGameFlove)
         {
             if (HeroTarget != null)
@@ -268,7 +283,7 @@ public class EnemyControl : MonoBehaviour, IControl
     private void NewTargetHero(IMove MoveHero)
     {
         HeroControl hero = _enemyManager.GetHero(MoveHero);
-        if (hero!=null)
+        if (hero != null)
         {
             HeroTarget.RemoveEnemy(this);
 
@@ -291,7 +306,7 @@ public class EnemyControl : MonoBehaviour, IControl
         if (_hexagonMain != hex)
         {
 
-            if (hex.ObjAgr!=null && hex.ObjAgr !=HeroTarget.IMoveMain)
+            if (hex.ObjAgr != null && hex.ObjAgr != HeroTarget.IMoveMain)
             {
                 NewTargetHero(hex.ObjAgr);
             }
@@ -373,7 +388,6 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         _healthPoints -= atack;
     }
-
     #region Interface
     public void Collision(Vector2 next)
     {

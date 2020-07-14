@@ -215,7 +215,10 @@ public class NavAgentFly : MonoBehaviour, IMove
     {
         return Control.HexagonMain();
     }
-
+    public GameObject GetObjMain()
+    {
+        return gameObject;
+    }
     public bool IsFlight()
     {
         return true;
