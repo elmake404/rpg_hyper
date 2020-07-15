@@ -37,13 +37,15 @@ public class EnemyManager : MonoBehaviour
             item.Initialization(this);
         }
 
-        if (_enemyControls.Count>0)
+        if (_enemyControls.Count<0)
         {
-            StartCoroutine(Production());
+            Debug.LogError("Incorrect number of units(_maxQuantityEnemy)");
+
         }
         else
         {
-            Debug.LogError("Incorrect number of units(_maxQuantityEnemy)");
+            //StartCoroutine(Production());
+
         }
     }
     private IEnumerator Production()

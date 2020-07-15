@@ -37,47 +37,18 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private void Start()
     {
-        //временно 
-        _hexagonMain = MapControl.FieldPosition(gameObject.layer, transform.position);
-        _hexagonMain.Contact(IMoveMain);
-        //незабудь удалить
-        transform.position = (Vector2)_hexagonMain.transform.position;
-
-        List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
-        ContactFilter2D contactFilter2D = new ContactFilter2D();
-
-        Physics2D.CircleCast(transform.position, 6.92f, Vector2.zero, contactFilter2D, hits2D);
-
-        for (int i = 0; i < hits2D.Count; i++)
-        {
-            HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
-            if (hex.TypeHexagon != 1)
-            {
-                _ListHexAgr.Add(hex);
-                hex.ObjAgr = IMoveMain;
-            }
-        }
-
-        hits2D.Clear();
-        Physics2D.CircleCast(transform.position, _atackDistensConst, Vector2.zero, contactFilter2D, hits2D);
-
-        for (int i = 0; i < hits2D.Count; i++)
-        {
-            HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
-
-            if (((Vector2)transform.position - hex.position).magnitude <= _atackDistensConst)
-            {
-                _ListHexAtack.Add(hex);
-            }
-        }
-
-        RecordApproac();
     }
     private void Update()
     {
         if (_healthPoints <= 0)
         {
             _enemyManager.RemoveHero(this);
+
+            for (int i = 0; i < _ListHexAgr.Count; i++)
+            {
+                _ListHexAgr[i].ObjAgr=null;
+            }
+
             if (EnemyTarget != null)
             {
                 EnemyTarget.RemoveHero(this);
@@ -286,6 +257,66 @@ public class HeroControl : MonoBehaviour, IControl
     {
         Pursuer.Remove(enemy);
     }
+    public void InstallHero()
+    {
+        _hexagonMain = MapControl.FieldPositionMapBeforeStart(gameObject.layer, transform.position);
+        transform.position = _hexagonMain.position;
+        if (_hexagonMain.TypeHexagon == 2 )
+        {
+            gameObject.layer = 11;
+        }
+        else if (_hexagonMain.TypeHexagon == 0)
+        {
+            gameObject.layer = 8;
+        }
+
+        _hexagonMain.Contact(IMoveMain);
+    }
+    public void MoveTheHero()
+    {
+        if(_hexagonMain!=null)
+        _hexagonMain.Gap();
+    }
+    public void StartGame()
+    {
+        //временно 
+        _hexagonMain = MapControl.FieldPosition(gameObject.layer, transform.position);
+        _hexagonMain.Contact(IMoveMain);
+
+        //незабудь удалить
+
+        transform.position = (Vector2)_hexagonMain.transform.position;
+
+        List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
+        ContactFilter2D contactFilter2D = new ContactFilter2D();
+
+        Physics2D.CircleCast(transform.position, 6.92f, Vector2.zero, contactFilter2D, hits2D);
+
+        for (int i = 0; i < hits2D.Count; i++)
+        {
+            HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
+            if (hex.TypeHexagon != 1)
+            {
+                _ListHexAgr.Add(hex);
+                hex.ObjAgr = IMoveMain;
+            }
+        }
+
+        hits2D.Clear();
+        Physics2D.CircleCast(transform.position, _atackDistensConst, Vector2.zero, contactFilter2D, hits2D);
+
+        for (int i = 0; i < hits2D.Count; i++)
+        {
+            HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
+
+            if (((Vector2)transform.position - hex.position).magnitude <= _atackDistensConst)
+            {
+                _ListHexAtack.Add(hex);
+            }
+        }
+
+        RecordApproac();
+    }    
 
     #region Atack
     public void Damage(float atack)

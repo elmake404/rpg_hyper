@@ -87,14 +87,15 @@ public class NavAgent : MonoBehaviour, IMove
                 }
             }
 
+            //else
+            //    {
+            //        if (((Vector2)transform.position - Control.HexagonMain().position).magnitude >= 0.01f)
+            //        {
+            //            transform.position = Vector2.MoveTowards(transform.position, Control.HexagonMain().position, _speed);
+            //        }
+            //    }
         }
-        else
-        {
-            if (((Vector2)transform.position - Control.HexagonMain().position).magnitude >= 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, Control.HexagonMain().position, _speed);
-            }
-        }
+
     }
     private IEnumerator StopSpeed(float time)
     {
@@ -160,7 +161,7 @@ public class NavAgent : MonoBehaviour, IMove
     {
         _wayList.Clear();
 
-        
+
         Way(hexagonFinish, EnemyTarget);
     }
     public void StopMove(HexagonControl CollcionHex)
@@ -192,7 +193,7 @@ public class NavAgent : MonoBehaviour, IMove
     }
     public bool FreeSpaceCheck(bool Flight)
     {
-        bool free= false;
+        bool free = false;
         List<HexagonControl> hexagons = Control.GetSurroundingHexes();
         if (Flight)
         {
