@@ -11,13 +11,19 @@ public class EnemyManager : MonoBehaviour
     private List<string> _enemyControls = new List<string>();
     [SerializeField]
     private List<HeroControl> _listHero = new List<HeroControl>();
+    [SerializeField]
+    private List<HeroControl> _listHeroGame = new List<HeroControl>();
     private Dictionary<string, GameObject> _enemies = new Dictionary<string, GameObject>();
     private Dictionary<string, int> _enemiesCount = new Dictionary<string, int>();
 
     [SerializeField]
     [Range(0, 100)]
     private int _maxQuantityGround, _maxQuantitFlying;
+    [SerializeField]
+    [Range(1, 5)]
+    private int _maxHero;
     private int _namberPointSpawn = 0;
+
 
     void Start()
     {
@@ -37,14 +43,9 @@ public class EnemyManager : MonoBehaviour
             item.Initialization(this);
         }
 
-        if (_enemyControls.Count<0)
+        if (_enemyControls.Count < 0)
         {
             Debug.LogError("Incorrect number of units(_maxQuantityEnemy)");
-
-        }
-        else
-        {
-            //StartCoroutine(Production());
 
         }
     }
@@ -66,12 +67,12 @@ public class EnemyManager : MonoBehaviour
                     EnemyControl Enemy = Instantiate(_enemies[name], _spawnPoint[_namberPointSpawn].position, Quaternion.identity).GetComponent<EnemyControl>();
                     Enemy.gameObject.name = name;
                     _enemiesCount[name]--;
-                    if (_enemiesCount[name]<=0)
+                    if (_enemiesCount[name] <= 0)
                     {
                         _enemyControls.Remove(name);
                     }
                     Enemy.First(this);
-                    GoalSelection(Enemy,name);
+                    GoalSelection(Enemy, name);
 
                     if (_namberPointSpawn != _spawnPoint.Length - 1)
                     {
@@ -100,10 +101,10 @@ public class EnemyManager : MonoBehaviour
         HeroControl heroControl = null;
         float Magnitude = float.PositiveInfinity;
 
-        for (int i = 0; i < _listHero.Count; i++)
+        for (int i = 0; i < _listHeroGame.Count; i++)
         {
             List<HexagonControl> listHex = new List<HexagonControl>();
-            listHex.AddRange(hexagon.GetWay(_listHero[i].HexagonMain()));
+            listHex.AddRange(hexagon.GetWay(_listHeroGame[i].HexagonMain()));
             float magnitude = 0;
 
             for (int j = 0; j < listHex.Count - 1; j++)
@@ -114,7 +115,7 @@ public class EnemyManager : MonoBehaviour
             if (Magnitude > magnitude)
             {
                 Magnitude = magnitude;
-                heroControl = _listHero[i];
+                heroControl = _listHeroGame[i];
             }
         }
         return heroControl;
@@ -124,23 +125,70 @@ public class EnemyManager : MonoBehaviour
         HeroControl heroControl = null;
         float Magnitude = float.PositiveInfinity;
 
-        for (int i = 0; i < _listHero.Count; i++)
+        for (int i = 0; i < _listHeroGame.Count; i++)
         {
             float magnitude = 0;
 
-            magnitude += (hexagon.position - (Vector2)_listHero[i].transform.position).magnitude;
+            magnitude += (hexagon.position - (Vector2)_listHeroGame[i].transform.position).magnitude;
 
             if (Magnitude > magnitude)
             {
                 Magnitude = magnitude;
-                heroControl = _listHero[i];
+                heroControl = _listHeroGame[i];
             }
         }
         return heroControl;
     }
-    public void GoalSelection(EnemyControl enemy,string name)
+    public HeroControl GetHeroWithMinimalHealth()
     {
-        if (_listHero.Count <= 0)
+        float Procent = float.PositiveInfinity;
+        HeroControl GetHero = null;
+        for (int i = 0; i < _listHeroGame.Count; i++)
+        {
+            if (_listHeroGame[i].GetHealthProcent() < Procent)
+            {
+                GetHero = _listHeroGame[i];
+                Procent = _listHeroGame[i].GetHealthProcent();
+            }
+        }
+        return GetHero;
+    }
+    public bool CheckHero()
+    {
+        if (_maxHero == 0)
+            return true;
+        else
+            return false;
+    }
+    public void EnterTheGame(HeroControl heroControl)
+    {
+        _listHeroGame.Add(heroControl);
+        _maxHero--;
+    }
+    public void EnteringTheGame(HeroControl heroControl)
+    {
+        _listHeroGame.Remove(heroControl);
+        _maxHero++;
+    }
+    public void StartGame()
+    {
+        for (int i = 0; i < _listHeroGame.Count; i++)
+        {
+            _listHeroGame[i].StartGame();
+        }
+        for (int i = 0; i < _listHero.Count; i++)
+        {
+            if (!_listHeroGame.Contains(_listHero[i]))
+            {
+                _listHero[i].GetComponent<NavAgent>().enabled = false;
+            }
+        }
+
+        StartCoroutine(Production());
+    }
+    public void GoalSelection(EnemyControl enemy, string name)
+    {
+        if (_listHeroGame.Count <= 0)
         {
             StaticLevelManager.IsGameFlove = false;
             return;
@@ -148,7 +196,7 @@ public class EnemyManager : MonoBehaviour
 
         HeroControl hero;
 
-        if (name== "ground")
+        if (name == "ground")
         {
             hero = GetNearestHero(enemy.HexagonMain());
         }
@@ -169,21 +217,17 @@ public class EnemyManager : MonoBehaviour
     }
     public HeroControl GetHero(IMove move)
     {
-        for (int i = 0; i < _listHero.Count; i++)
+        for (int i = 0; i < _listHeroGame.Count; i++)
         {
-            if (_listHero[i].IMoveMain == move)
+            if (_listHeroGame[i].IMoveMain == move)
             {
-                return _listHero[i];
+                return _listHeroGame[i];
             }
         }
         return null;
     }
     public void RemoveHero(HeroControl heroControl)
     {
-        _listHero.Remove(heroControl);
-    }
-    public void InitializationList(HeroControl[] heroes)
-    {
-        _listHero.AddRange(heroes);
+        _listHeroGame.Remove(heroControl);
     }
 }

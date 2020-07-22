@@ -14,7 +14,8 @@ public class NavAgent : MonoBehaviour, IMove
     private bool _isBypass;
     [SerializeField]
     private float _speed;
-    private float _speedMove;
+    [SerializeField]
+    private float _speedMove, _debuffSpeed;
 
     public IControl Control;
     private void Awake()
@@ -45,11 +46,12 @@ public class NavAgent : MonoBehaviour, IMove
                     gameObject.layer = 8;
                 }
 
-                transform.position = Vector2.MoveTowards(transform.position, _targetHexagon.transform.position, _speedMove);
+                transform.position = Vector2.MoveTowards(transform.position, _targetHexagon.transform.position, _speedMove + _debuffSpeed);
 
                 Vector2 NextPos = (Vector2)transform.position + (Vector2)(_targetHexagon.transform.position - transform.position).normalized * 1.8f;
 
                 Control.Collision(NextPos);
+                Control.CollisionDebuff(transform.position);
 
                 if (_wayList.Count > 0)
                 {
@@ -63,7 +65,7 @@ public class NavAgent : MonoBehaviour, IMove
             {
                 if (((Vector2)transform.position - Control.HexagonMain().position).magnitude >= 0.01f)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, Control.HexagonMain().position, _speed);
+                    transform.position = Vector2.MoveTowards(transform.position, Control.HexagonMain().position, _speed + _debuffSpeed);
                 }
 
                 if (_isBypass)
@@ -157,6 +159,14 @@ public class NavAgent : MonoBehaviour, IMove
     }
 
     #region interface 
+    public void DebuffSpeed(float debuff)
+    {
+        _debuffSpeed = debuff;
+    }
+    public float GetSpeed()
+    {
+        return _speed;
+    }
     public void StartWay(HexagonControl hexagonFinish, IMove EnemyTarget)
     {
         _wayList.Clear();

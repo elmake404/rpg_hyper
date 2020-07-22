@@ -125,7 +125,7 @@ public class MapControl : MonoBehaviour
     {
         List<HexagonControl> hexagons = new List<HexagonControl>();
         int _columbias = (_row % 2) == 0 ? 1 : -1;
-        if (((Vector2)MapNav[_row, _column].position - pos).magnitude <= 1.8f)
+        if ((MapNav[_row, _column].position - pos).magnitude <= 1.8f)
         {
             if (MapNav[_row, _column].gameObject.layer == Layer && (MapNav[_row, _column].TypeHexagon != 1 || Layer == 12) || (Layer == 12 && MapNav[_row, _column].TypeHexagon == 3))
                 return MapNav[_row, _column];
@@ -472,14 +472,14 @@ public class MapControl : MonoBehaviour
             }
         }
 
-        if (Y >= MapNav.GetLength(0))
-        {
-            Y = MapNav.GetLength(0) - 1;
-        }
-        else if (Y < 0)
-        {
-            Y = 0;
-        }
+        //if (Y >= MapNav.GetLength(0))
+        //{
+        //    Y = MapNav.GetLength(0) - 1;
+        //}
+        //else if (Y < 0)
+        //{
+        //    Y = 0;
+        //}
 
 
         if ((Y % 2) != 0)
@@ -493,26 +493,31 @@ public class MapControl : MonoBehaviour
         X = X > 0 ? X : 0;
         int XInt = Mathf.RoundToInt(X);
 
-        if (XInt >= MapNav.GetLength(1))
-        {
-            XInt = MapNav.GetLength(1) - 1;
-        }
-        else if (XInt < 0)
-        {
-            XInt = 0;
-        }
+        //if (XInt >= MapNav.GetLength(1))
+        //{
+        //    XInt = MapNav.GetLength(1) - 1;
+        //}
+        //else if (XInt < 0)
+        //{
+        //    XInt = 0;
+        //}
 
-
-        return OwnershipCheckMapBeforeStart((int)Y, XInt, Position);
+        if (XInt >= MapNav.GetLength(1) || (XInt < 0) || (Y >= MapNav.GetLength(0)) || (Y < 0))
+        {
+            return null;
+        }
+        else
+            return OwnershipCheckMapBeforeStart((int)Y, XInt, Position);
     }
     public static HexagonControl FieldPositionMapBeforeStart(int layer, Vector2 position)//гексагон к которому принадлежит герой
     {
         Vector2 difference = layer == 8 ? Vector2.zero : new Vector2(X, Y);
         HexagonControl hexagon = GetPositionOnTheMapBeforeStart(position - difference);
 
-        return hexagon.GetHexagonMain();//нужный 6-ти угольник  
+        return hexagon;//нужный 6-ти угольник  
     }
     #endregion
+
     #region Fly
     private static HexagonControl OwnershipCheckFly(int _row, int _column, Vector2 pos)
     {

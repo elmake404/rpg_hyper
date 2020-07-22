@@ -4,14 +4,34 @@ using UnityEngine;
 
 public class HeroControl : MonoBehaviour, IControl
 {
+    [System.Serializable]
+    private struct MaxMin
+    {
+        public float Max;
+        public float Min;
+    }
+    [SerializeField]
+    private CanvasManager _canvasManager;
+    [SerializeField]
+    private Transform _awakePoint;
+    [SerializeField]
+    private GameObject _shell;
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
 
+    private IAbilities _iAbilities;
+
     [SerializeField]
-    private float _healthPoints, _attackPower, _atackDistens, _powerRegeneration;
-    private float _atackDistensConst, _healthPointsConst, _regeneration;
+    private MaxMin _attackPower;
+    [SerializeField]
+    private float _healthPoints, _atackSpeed, _atackDistens, _powerRegeneration, _agrDistens, _armor;
+    private float _atackDistensConst, _healthPointsConst, _regeneration, _agrDistensConst, _debuffHealth, _debuffAtackSpeed;
+    [SerializeField]
+    private bool _isLongRangeAttack;
+    [SerializeField]
+    private int _namberTegAbiliti;
 
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -21,6 +41,7 @@ public class HeroControl : MonoBehaviour, IControl
     [HideInInspector]
     public bool IsAttack;
     public Animator Animator;
+
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
     [HideInInspector]
@@ -28,15 +49,19 @@ public class HeroControl : MonoBehaviour, IControl
 
     private void Awake()
     {
-        _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
-        _healthPointsConst = _healthPoints;
-        _regeneration = (_healthPointsConst * _powerRegeneration / 100f)/60;
-        //_navigationHero.Control = this;
         IMoveMain = GetComponent<IMove>();
+        _iAbilities = GetComponent<IAbilities>();
+
+        _iAbilities.Initialization(_canvasManager);
+
+        transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
+        _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
+        _agrDistensConst = (1.73f * (_agrDistens * 2)) + 0.1f;
+        _healthPointsConst = _healthPoints;
+        _regeneration = (_healthPointsConst * _powerRegeneration / 100f) / 60;
+        //_navigationHero.Control = this;
+
         IControlMain = this;
-    }
-    private void Start()
-    {
     }
     private void Update()
     {
@@ -46,9 +71,9 @@ public class HeroControl : MonoBehaviour, IControl
 
             for (int i = 0; i < _ListHexAgr.Count; i++)
             {
-                _ListHexAgr[i].ObjAgr=null;
+                _ListHexAgr[i].ObjAgr = null;
             }
-
+            _iAbilities.DethAbility();
             if (EnemyTarget != null)
             {
                 EnemyTarget.RemoveHero(this);
@@ -59,7 +84,7 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
-        if (_healthPoints<_healthPointsConst)
+        if (_healthPoints < _healthPointsConst)
         {
             _healthPoints += _regeneration;
             if (_healthPoints > _healthPointsConst)
@@ -69,6 +94,8 @@ public class HeroControl : MonoBehaviour, IControl
         }
 
         EnemyTarget = EnemyChoice();
+
+        _healthPoints += _debuffHealth;
 
         if (EnemyTarget != null)
         {
@@ -104,9 +131,20 @@ public class HeroControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         IsAttack = true;
-        EnemyTarget.Damage(_attackPower);
-        IMoveMain.StopSpeedAtack(0.5f);
-        yield return new WaitForSeconds(0.5f);
+        _iAbilities.Atack(Random.Range(_attackPower.Min, _attackPower.Max), out float AtackPower, out bool IsIgnotArmor);
+
+        if (_isLongRangeAttack)
+        {
+            IShell shell = Instantiate(_shell, transform.position, Quaternion.identity).GetComponent<IShell>();
+            _iAbilities.AtackСorrection(shell, EnemyTarget, AtackPower, IsIgnotArmor);
+        }
+        else
+        {
+            EnemyTarget.Damage(AtackPower, IsIgnotArmor);
+        }
+
+        //IMoveMain.StopSpeedAtack(0.5f);
+        yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + _debuffAtackSpeed));
         IsAttack = false;
     }
     private void RecordApproac()
@@ -259,23 +297,40 @@ public class HeroControl : MonoBehaviour, IControl
     }
     public void InstallHero()
     {
-        _hexagonMain = MapControl.FieldPositionMapBeforeStart(gameObject.layer, transform.position);
-        transform.position = _hexagonMain.position;
-        if (_hexagonMain.TypeHexagon == 2 )
-        {
-            gameObject.layer = 11;
-        }
-        else if (_hexagonMain.TypeHexagon == 0)
-        {
-            gameObject.layer = 8;
-        }
 
-        _hexagonMain.Contact(IMoveMain);
+        HexagonControl hex = MapControl.FieldPositionMapBeforeStart(gameObject.layer, transform.position);
+
+        if (hex == null || _enemyManager.CheckHero())
+        {
+            transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
+            _hexagonMain = null;
+        }
+        else
+        {
+            _hexagonMain = hex;
+            _enemyManager.EnterTheGame(this);
+
+            _hexagonMain = _hexagonMain.GetHexagonMain();
+            transform.position = _hexagonMain.position;
+            if (_hexagonMain.TypeHexagon == 2)
+            {
+                gameObject.layer = 11;
+            }
+            else if (_hexagonMain.TypeHexagon == 0)
+            {
+                gameObject.layer = 8;
+            }
+
+            _hexagonMain.Contact(IMoveMain);
+        }
     }
     public void MoveTheHero()
     {
-        if(_hexagonMain!=null)
-        _hexagonMain.Gap();
+        if (_hexagonMain != null)
+        {
+            _enemyManager.EnteringTheGame(this);
+            _hexagonMain.Gap();
+        }
     }
     public void StartGame()
     {
@@ -290,12 +345,12 @@ public class HeroControl : MonoBehaviour, IControl
         List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
         ContactFilter2D contactFilter2D = new ContactFilter2D();
 
-        Physics2D.CircleCast(transform.position, 6.92f, Vector2.zero, contactFilter2D, hits2D);
+        Physics2D.CircleCast(transform.position, _agrDistensConst, Vector2.zero, contactFilter2D, hits2D);
 
         for (int i = 0; i < hits2D.Count; i++)
         {
             HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
-            if (hex.TypeHexagon != 1)
+            if (hex != null && hex.TypeHexagon != 1 && !_ListHexAgr.Contains(hex))
             {
                 _ListHexAgr.Add(hex);
                 hex.ObjAgr = IMoveMain;
@@ -309,20 +364,52 @@ public class HeroControl : MonoBehaviour, IControl
         {
             HexagonControl hex = hits2D[i].collider.GetComponent<HexagonControl>().GetHexagonMain();
 
-            if (((Vector2)transform.position - hex.position).magnitude <= _atackDistensConst)
+            if (hex != null && (((Vector2)transform.position - hex.position).magnitude <= _atackDistensConst) && !_ListHexAtack.Contains(hex))
             {
                 _ListHexAtack.Add(hex);
             }
         }
-
+        _iAbilities.StartAbility();
         RecordApproac();
-    }    
-
-    #region Atack
-    public void Damage(float atack)
-    {
-        _healthPoints -= atack;
+        CollisionDebuff(transform.position);
     }
+
+    #region Health
+    public float GetRegeneration()
+    {
+        return _regeneration;
+    }
+    public void AdditionalTreatment(float pointHeal)
+    {
+        _healthPoints += pointHeal;
+
+        if (_healthPoints > _healthPointsConst)
+        {
+            _healthPoints = _healthPointsConst;
+        }
+    }
+    public float GetHealthProcent()
+    {
+        return _healthPoints / (_healthPointsConst / 100);
+    }
+    public float GetMaxHealth()
+    {
+        return _healthPoints;
+    }
+    public void Damage(float atack, bool ignoreArmor)
+    {
+        float Protection = atack * _armor / 100;
+
+        if (!ignoreArmor)
+        {
+            _healthPoints -= _iAbilities.Armor(atack - Protection);
+        }
+        else
+        {
+            _healthPoints -= _iAbilities.Armor(atack);
+        }
+    }
+
     #endregion
 
     #region Interface
@@ -330,7 +417,18 @@ public class HeroControl : MonoBehaviour, IControl
     {
         CollisionMain(next);
     }
+    public void CollisionDebuff(Vector2 NextPos)
+    {
+        HexagonControl hex;
 
+        if (!IMoveMain.IsFlight())
+        {
+            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+            _debuffHealth = ((_healthPointsConst / 100) * hex.DebuffHex.Health)/ 60;
+            _debuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
+            IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed);
+        }
+    }
     public HexagonControl HexagonMain()
     {
         return _hexagonMain;

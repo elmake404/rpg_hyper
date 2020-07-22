@@ -5,6 +5,16 @@ using UnityEngine;
 
 public class HexagonControl : MonoBehaviour
 {
+    [System.Serializable]
+    public struct Debuff
+    {
+        public float Speed;
+        public float Health;
+        public float AtackSpeed;
+    }
+
+    public Debuff DebuffHex;
+
     [SerializeField]
     private GameObject _flag;
     public DataHexNav Data;

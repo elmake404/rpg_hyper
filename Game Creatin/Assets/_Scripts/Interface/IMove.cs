@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface IMove
 {
+    void DebuffSpeed(float debuff);
+    float GetSpeed();
     GameObject GetObjMain();
     void StopMove(HexagonControl CollcionHex);
     void StopMoveTarget();

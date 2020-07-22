@@ -18,41 +18,45 @@ public class PlayerControl : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!StaticLevelManager.IsGameFlove)
         {
-            _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-            Collider2D Collider = Physics2D.OverlapPoint(_camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100)));
-            if (Collider != null)
+            if (Input.GetMouseButtonDown(0))
             {
-                if (Collider.gameObject.tag == "Hero")
+                _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+                Collider2D Collider = Physics2D.OverlapPoint(_camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100)));
+                if (Collider != null)
                 {
-                    _heroControl = Collider.gameObject.GetComponentInParent<HeroControl>();
-                    _heroControl.MoveTheHero();
-                    _startPosObj = _heroControl.transform.position;
+                    if (Collider.gameObject.tag == "Hero")
+                    {
+                        _heroControl = Collider.gameObject.GetComponentInParent<HeroControl>();
+                        _heroControl.MoveTheHero();
+                        _startPosObj = _heroControl.transform.position;
+                    }
+                }
+            }
+            else if (Input.GetMouseButton(0))
+            {
+                if (_startPos == Vector2.zero)
+                {
+                    _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+                }
+
+                _currPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+
+                if (_heroControl != null)
+                {
+                    _heroControl.transform.position = _currPos;
+                }
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                if (_heroControl != null)
+                {
+                    _heroControl.InstallHero();
+                    _heroControl = null;
                 }
             }
         }
-        else if (Input.GetMouseButton(0))
-        {
-            if (_startPos == Vector2.zero)
-            {
-                _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-            }
-            _currPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
-            if (_heroControl != null)
-            {
-                _heroControl.transform.position = _currPos;
-            }
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            if (_heroControl != null)
-            {
-                _heroControl.InstallHero();
-                _heroControl = null;
-            }
-        }
-
     }
 
 }

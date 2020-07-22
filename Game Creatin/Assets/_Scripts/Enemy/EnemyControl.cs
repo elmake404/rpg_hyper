@@ -10,8 +10,8 @@ public class EnemyControl : MonoBehaviour, IControl
     private HexagonControl _hexagonMain;
 
     [SerializeField]
-    private float _healthPoints, _attackPower, _atackDistens,_powerRegeneration;
-    private float _atackDistensConst, _healthPointsConst, _regeneration;
+    private float _healthPoints, _atackSpeed, _attackPower, _atackDistens, _powerRegeneration, _armor;
+    private float _atackDistensConst, _healthPointsConst, _regeneration, _debuffHealth, _debuffAtackSpeed;
 
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
@@ -60,6 +60,8 @@ public class EnemyControl : MonoBehaviour, IControl
                 _healthPoints = _healthPointsConst;
             }
         }
+
+        _healthPoints += _debuffHealth;
 
         if (StaticLevelManager.IsGameFlove)
         {
@@ -119,9 +121,9 @@ public class EnemyControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         IsAttack = true;
-        HeroTarget.Damage(_attackPower);
-        IMoveMain.StopSpeedAtack(0.5f);
-        yield return new WaitForSeconds(0.5f);
+        HeroTarget.Damage(_attackPower, false);
+        IMoveMain.StopSpeedAtack(_atackSpeed + _debuffAtackSpeed);
+        yield return new WaitForSeconds(_atackSpeed + _debuffAtackSpeed);
         IsAttack = false;
     }
     private void RecordApproac()
@@ -296,6 +298,7 @@ public class EnemyControl : MonoBehaviour, IControl
     private void CollisionMain(Vector2 NextPos)
     {
         HexagonControl hex;
+
         if (IMoveMain.IsFlight())
         {
             hex = MapControl.FieldPositionFly(gameObject.layer, NextPos);
@@ -384,14 +387,40 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         Pursuer.Remove(hero);
     }
-    public void Damage(float atack)
+    public void Damage(float atack, bool ignoreArmor)
     {
-        _healthPoints -= atack;
+        float Protection = atack * _armor / 100;
+
+        if (!ignoreArmor)
+        {
+            _healthPoints -= (atack - Protection);
+        }
+        else
+        {
+            _healthPoints -= atack;
+
+        }
     }
     #region Interface
     public void Collision(Vector2 next)
     {
         CollisionMain(next);
+    }
+    public float GetHealthProcent()
+    {
+        return _healthPoints / (_healthPointsConst / 100);
+    }
+    public void CollisionDebuff(Vector2 NextPos)
+    {
+        HexagonControl hex;
+
+        if (!IMoveMain.IsFlight())
+        {
+            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+            _debuffHealth = ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
+            _debuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
+            IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed);
+        }
     }
     public HexagonControl HexagonMain()
     {

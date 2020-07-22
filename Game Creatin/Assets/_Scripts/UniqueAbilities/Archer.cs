@@ -1,0 +1,120 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Archer : MonoBehaviour, IAbilities
+{
+    private CanvasManager _canvasManager;
+    private List<bool> _listProtectionOptionsCrit = new List<bool>();
+
+    [SerializeField]
+    private float _critPower, _timeBoost, _timeForBoost;
+    private float _timeForBoostConst, _timeBoostConst;
+    [SerializeField]
+    private int _critСhance, _attackAcceleration;
+    private bool _boostSpeed, _activationBoost;
+
+    void Start()
+    {
+        _timeForBoostConst = _timeForBoost;
+        _timeBoostConst = _timeBoost;
+        RandomFilling();
+    }
+    void FixedUpdate()
+    {
+        if (StaticLevelManager.IsGameFlove)
+        {
+            if (_timeForBoost <= 0 && !_boostSpeed)
+            {
+                _boostSpeed = true;
+                //_timeForBoost = _timeForBoostConst;
+            }
+
+            if (_timeForBoost > 0)
+            {
+                _timeForBoost -= Time.deltaTime;
+            }
+
+            if (_activationBoost)
+            {
+                _timeBoost -= Time.deltaTime;
+                if (_timeBoost <= 0)
+                {
+                    _activationBoost = false;
+                    _timeBoost = _timeBoostConst;
+                }
+            }
+        }
+    }
+    private void RandomFilling()
+    {
+        int Positiv = 0;
+        for (int i = 0; i < 100; i++)
+        {
+            _listProtectionOptionsCrit.Add(false);
+        }
+
+        List<int> Positivelement = new List<int>();
+
+        while (Positiv < _critСhance)
+        {
+            int possibility = Random.Range(0, _listProtectionOptionsCrit.Count);
+            if (!Positivelement.Contains(possibility))
+            {
+                _listProtectionOptionsCrit[possibility] = true;
+                Positiv++;
+            }
+        }
+    }
+    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor)
+    {
+        ignoreArmor = false;
+        int rnd = Random.Range(0, 100);
+
+        if (_listProtectionOptionsCrit[rnd])
+        {
+            Atack = AtackPower * (_critPower / 100);
+        }
+        else
+        {
+            Atack = AtackPower;
+        }
+    }
+    public float Armor(float DamagPower)
+    {
+        return DamagPower;
+    }
+    public float AtackSpeed(float Speed)
+    {
+        if (_boostSpeed)
+        {
+            _activationBoost = true;
+            _boostSpeed = false;
+            _timeForBoost = _timeForBoostConst;
+        }
+
+        if (_activationBoost)
+        {
+            return Speed / _attackAcceleration;
+        }
+        else
+        {
+            return Speed;
+        }
+    }
+    public void StartAbility()
+    {
+    }
+    public void DethAbility()
+    {
+    }
+    public void AtackСorrection(IShell shell, EnemyControl enemy, float damag, bool isIgnorArmor)
+    {
+        shell.Initialization(enemy, damag, isIgnorArmor);
+    }
+    public void Initialization(CanvasManager canvasManager)
+    {
+        _canvasManager = canvasManager;
+    }
+
+}
