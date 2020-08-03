@@ -130,9 +130,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a7b54e4248ea1458fa5335b3d4595b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
   _shell: {fileID: 0}
-  _attackPower:
+  _atackPower:
     Max: 15
     Min: 10
   _healthPoints: 600
@@ -142,11 +143,18 @@ MonoBehaviour:
   _agrDistens: 1
   _armor: 10
   _isLongRangeAttack: 0
+  _namberTegAbiliti: 4
+  _priorityAgr: 2
   EnemyTarget: {fileID: 0}
   IsAttack: 0
+  IsStopAtack: 0
   Animator: {fileID: 0}
   AnApproac: []
   Pursuer: []
+  BuffHealth: 0
+  BuffAtackSpeed: 0
+  BuffArmor: 0
+  BuffAtackPower: 0
 --- !u!50 &8699803935369676830
 Rigidbody2D:
   serializedVersion: 4
@@ -183,6 +191,8 @@ MonoBehaviour:
   _isMove: 0
   _isClever: 1
   _speed: 0.17
+  _speedMove: 0
+  _debuffSpeed: 0
 --- !u!114 &329561407544826946
 MonoBehaviour:
   m_ObjectHideFlags: 0

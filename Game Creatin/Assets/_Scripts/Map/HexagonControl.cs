@@ -11,9 +11,14 @@ public class HexagonControl : MonoBehaviour
         public float Speed;
         public float Health;
         public float AtackSpeed;
+        public float Damag;
     }
 
     public Debuff DebuffHex;
+    public Debuff DebuffHexEnemy;
+    public Debuff DebuffHexEnemyFly;
+    public Debuff DebuffHexHero;
+    public SpriteRenderer Sprite;
 
     [SerializeField]
     private GameObject _flag;
@@ -23,7 +28,8 @@ public class HexagonControl : MonoBehaviour
 
     public IMove ObjAbove;// интерфейс стоящего
     public IMove ObjAboveFly;
-    public IMove ObjAgr;
+
+    public Dictionary<int, IMove> ObjAgrDictionary = new Dictionary<int, IMove>();
 
     public HexagonControl Elevation, Floor;
     [HideInInspector]

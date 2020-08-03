@@ -1,34 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Knight : MonoBehaviour, IAbilities
 {
-    private CanvasManager _canvasManager;
+    private Image _imageAbiliti;
 
     private bool _isCriticalHit;
     [SerializeField]
     private float _critPower, _timeForCrit;
-    private float _timeForCritConst;
+    private float _timeForCritConst, _fillAmountTime;
     [SerializeField]
     private int _blockСhance;
     private List<bool> _listProtectionOptionsArmor = new List<bool>();
     void Start()
     {
         _timeForCritConst = _timeForCrit;
+        _timeForCrit = 0;
+        _fillAmountTime = Time.fixedDeltaTime / _timeForCritConst;
         RandomFilling();
     }
     void FixedUpdate()
     {
-        if (_timeForCrit <= 0 && !_isCriticalHit)
+        if (StaticLevelManager.IsGameFlove && _imageAbiliti != null)
         {
-            _isCriticalHit = true;
-            _timeForCrit = _timeForCritConst;
-        }
+            if (_timeForCrit <= 0 && !_isCriticalHit)
+            {
+                _isCriticalHit = true;
+            }
 
-        if (_timeForCrit>0)
-        {
-            _timeForCrit -= Time.deltaTime;
+            if (_timeForCrit > 0)
+            {
+                _timeForCrit -= Time.deltaTime;
+                _imageAbiliti.fillAmount -= _fillAmountTime;
+            }
         }
     }
     private void RandomFilling()
@@ -61,6 +67,8 @@ public class Knight : MonoBehaviour, IAbilities
             _isCriticalHit = false;
 
             Atack = AtackPower * (_critPower / 100);
+            _timeForCrit = _timeForCritConst;
+            _imageAbiliti.fillAmount = 1;
         }
         else
         {
@@ -92,9 +100,10 @@ public class Knight : MonoBehaviour, IAbilities
     public void AtackСorrection(IShell shell, EnemyControl enemy, float damag, bool isIgnorArmor)
     {
     }
-    public void Initialization(CanvasManager canvasManager)
+    public void Initialization(Image image)
     {
-        _canvasManager = canvasManager;
+        _imageAbiliti = image;
+        _imageAbiliti.fillAmount = 0;
     }
 
 }

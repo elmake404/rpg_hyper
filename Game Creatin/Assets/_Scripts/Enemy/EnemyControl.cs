@@ -11,7 +11,7 @@ public class EnemyControl : MonoBehaviour, IControl
 
     [SerializeField]
     private float _healthPoints, _atackSpeed, _attackPower, _atackDistens, _powerRegeneration, _armor;
-    private float _atackDistensConst, _healthPointsConst, _regeneration, _debuffHealth, _debuffAtackSpeed;
+    private float _atackDistensConst, _healthPointsConst, _regeneration, _debuffHealth, _debuffAtackSpeed, _damagEnvironment;
 
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
@@ -52,6 +52,8 @@ public class EnemyControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
+        Damage(_damagEnvironment,false);
+
         if (_healthPoints < _healthPointsConst)
         {
             _healthPoints += _regeneration;
@@ -308,10 +310,21 @@ public class EnemyControl : MonoBehaviour, IControl
 
         if (_hexagonMain != hex)
         {
+            int PriorityAgr = int.MaxValue;
+            IMove hero = null;
 
-            if (hex.ObjAgr != null && hex.ObjAgr != HeroTarget.IMoveMain)
+            foreach (var Item in hex.ObjAgrDictionary)
             {
-                NewTargetHero(hex.ObjAgr);
+                if (Item.Key<PriorityAgr)
+                {
+                    PriorityAgr = Item.Key;
+                    hero = Item.Value;
+                }
+            }
+
+            if (hero != HeroTarget.IMoveMain)
+            {
+                NewTargetHero(hero);
             }
 
             if (!hex.GetFree(IMoveMain.IsFlight()))
@@ -389,7 +402,7 @@ public class EnemyControl : MonoBehaviour, IControl
     }
     public void Damage(float atack, bool ignoreArmor)
     {
-        float Protection = atack * _armor / 100;
+        float Protection = atack * _armor / 100f;
 
         if (!ignoreArmor)
         {
@@ -417,9 +430,24 @@ public class EnemyControl : MonoBehaviour, IControl
         if (!IMoveMain.IsFlight())
         {
             hex = MapControl.FieldPosition(gameObject.layer, NextPos);
-            _debuffHealth = ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
-            _debuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
-            IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed);
+            _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemy.Health) / 50f;
+            _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemy.AtackSpeed;
+            _damagEnvironment = hex.DebuffHexEnemy.Damag / 50f;
+           float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemy.Speed;
+
+            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+            _debuffHealth += ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
+            _debuffAtackSpeed += (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
+            _damagEnvironment += hex.DebuffHex.Damag / 50f;
+            IMoveMain.DebuffSpeed(DeSpeed+((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
+        }
+        else
+        {
+            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+            _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemyFly.Health) / 50f;
+            _damagEnvironment = hex.DebuffHexEnemyFly.Damag / 50f;
+            _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemyFly.AtackSpeed;
+            IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemyFly.Speed);
         }
     }
     public HexagonControl HexagonMain()

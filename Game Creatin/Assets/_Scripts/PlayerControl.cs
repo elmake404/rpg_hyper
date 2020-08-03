@@ -6,7 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
     private Camera _camera;
     private HeroControl _heroControl;
-    private Vector2 _startPos, _currPos, _startPosObj;
+    private Vector2 _startPos, _currPos;
     private void Awake()
     {
         //StaticLevelManager.IsGameFlove = true;
@@ -30,7 +30,6 @@ public class PlayerControl : MonoBehaviour
                     {
                         _heroControl = Collider.gameObject.GetComponentInParent<HeroControl>();
                         _heroControl.MoveTheHero();
-                        _startPosObj = _heroControl.transform.position;
                     }
                 }
             }
@@ -56,6 +55,43 @@ public class PlayerControl : MonoBehaviour
                     _heroControl = null;
                 }
             }
+        }
+        else
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+                Collider2D Collider = Physics2D.OverlapPoint(_camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100)));
+                if (Collider != null)
+                {
+                    if (Collider.gameObject.tag == "Hero")
+                    {
+                        _heroControl = Collider.gameObject.GetComponentInParent<HeroControl>();
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            else if (Input.GetMouseButton(0))
+            {
+                _currPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                Collider2D Collider = Physics2D.OverlapPoint(_camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100)));
+                if (_heroControl != null && Collider != null && Collider.tag == "Enemy")
+                {
+                    _heroControl.EnemyTarget = Collider.GetComponent<EnemyControl>();
+                }
+                else
+                {
+                    _heroControl = null;
+                }
+            }
+
         }
     }
 

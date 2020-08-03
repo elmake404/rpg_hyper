@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Parson : MonoBehaviour, IAbilities
 {
     [SerializeField]
     private float _healthRecoveryPercentage, _timeForHeal, _ranjeAura;
-    private float _timeForHealConst;
-    private CanvasManager _canvasManager;
+    private float _timeForHealConst, _fillAmountTime;
+    private Image _imageAbiliti;
     private EnemyManager _manager;
     private List<HexagonControl> _ListHexAura = new List<HexagonControl>();
     private List<Heal> _ListHexHeal = new List<Heal>();
@@ -16,30 +17,31 @@ public class Parson : MonoBehaviour, IAbilities
     {
         _manager = FindObjectOfType<EnemyManager>();
         _timeForHealConst = _timeForHeal;
+        _timeForHeal = 0;
+        _fillAmountTime = Time.fixedDeltaTime / _timeForHealConst;
     }
-
     void FixedUpdate()
     {
-        if (StaticLevelManager.IsGameFlove)
+        if (StaticLevelManager.IsGameFlove&& _imageAbiliti!=null)
         {
             if (_timeForHeal <= 0)
             {
                 Heal();
                 _timeForHeal = _timeForHealConst;
+                _imageAbiliti.fillAmount = 1;
             }
             else
             {
                 _timeForHeal -= Time.deltaTime;
+                _imageAbiliti.fillAmount -= Time.deltaTime;
             }
         }
     }
-
     private void Heal()
     {
         HeroControl hero = _manager.GetHeroWithMinimalHealth();
         hero.AdditionalTreatment((hero.GetMaxHealth() / 100f) * _healthRecoveryPercentage);
     }
-
     public float Armor(float DamagPower)
     {
         return DamagPower;
@@ -85,9 +87,9 @@ public class Parson : MonoBehaviour, IAbilities
     {
         shell.Initialization(enemy, damag, isIgnorArmor);
     }
-
-    public void Initialization(CanvasManager canvasManager)
+    public void Initialization(Image image)
     {
-        _canvasManager = canvasManager;
+        _imageAbiliti = image;
+        _imageAbiliti.fillAmount = 0;
     }
 }

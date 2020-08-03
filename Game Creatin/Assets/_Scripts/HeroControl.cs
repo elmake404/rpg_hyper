@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeroControl : MonoBehaviour, IControl
 {
@@ -10,6 +11,7 @@ public class HeroControl : MonoBehaviour, IControl
         public float Max;
         public float Min;
     }
+
     [SerializeField]
     private CanvasManager _canvasManager;
     [SerializeField]
@@ -24,14 +26,14 @@ public class HeroControl : MonoBehaviour, IControl
     private IAbilities _iAbilities;
 
     [SerializeField]
-    private MaxMin _attackPower;
+    private MaxMin _atackPower;
     [SerializeField]
     private float _healthPoints, _atackSpeed, _atackDistens, _powerRegeneration, _agrDistens, _armor;
-    private float _atackDistensConst, _healthPointsConst, _regeneration, _agrDistensConst, _debuffHealth, _debuffAtackSpeed;
+    private float _atackDistensConst, _healthPointsConst, _regeneration, _agrDistensConst;
     [SerializeField]
     private bool _isLongRangeAttack;
     [SerializeField]
-    private int _namberTegAbiliti;
+    private int _namberTegAbiliti, _priorityAgr;
 
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -39,7 +41,7 @@ public class HeroControl : MonoBehaviour, IControl
     [HideInInspector]
     public EnemyControl EnemyTarget;
     [HideInInspector]
-    public bool IsAttack;
+    public bool IsAttack, IsStopAtack;
     public Animator Animator;
 
     [HideInInspector]
@@ -47,12 +49,13 @@ public class HeroControl : MonoBehaviour, IControl
     [HideInInspector]
     public List<EnemyControl> Pursuer = new List<EnemyControl>();
 
+    [SerializeField]
+    public float BuffHealth, BuffAtackSpeed, BuffArmor, BuffAtackPower;
+
     private void Awake()
     {
         IMoveMain = GetComponent<IMove>();
         _iAbilities = GetComponent<IAbilities>();
-
-        _iAbilities.Initialization(_canvasManager);
 
         transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
@@ -71,41 +74,43 @@ public class HeroControl : MonoBehaviour, IControl
 
             for (int i = 0; i < _ListHexAgr.Count; i++)
             {
-                _ListHexAgr[i].ObjAgr = null;
+                _ListHexAgr[i].ObjAgrDictionary.Remove(_priorityAgr);
             }
+
             _iAbilities.DethAbility();
+
             if (EnemyTarget != null)
             {
                 EnemyTarget.RemoveHero(this);
             }
+
             _hexagonMain.Gap();
+            _canvasManager.DeactivationAbiliti(_namberTegAbiliti);
             Destroy(gameObject);
         }
     }
     private void FixedUpdate()
     {
+        _healthPoints += BuffHealth;
+
         if (_healthPoints < _healthPointsConst)
         {
             _healthPoints += _regeneration;
-            if (_healthPoints > _healthPointsConst)
-            {
-                _healthPoints = _healthPointsConst;
-            }
         }
 
-        EnemyTarget = EnemyChoice();
+        if (_healthPoints > _healthPointsConst)
+        {
+            _healthPoints = _healthPointsConst;
+        }
 
-        _healthPoints += _debuffHealth;
+        if (EnemyTarget == null)
+            EnemyTarget = EnemyChoice();
+
 
         if (EnemyTarget != null)
         {
             if (((Vector2)EnemyTarget.transform.position - (Vector2)transform.position).magnitude <= _atackDistensConst)
             {
-                if (IMoveMain.IsGo())
-                {
-                    IMoveMain.StopMoveTarget();
-                }
-
                 if (!IsAttack)
                 {
                     StartCoroutine(Atack());
@@ -131,7 +136,7 @@ public class HeroControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         IsAttack = true;
-        _iAbilities.Atack(Random.Range(_attackPower.Min, _attackPower.Max), out float AtackPower, out bool IsIgnotArmor);
+        _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower), out float AtackPower, out bool IsIgnotArmor);
 
         if (_isLongRangeAttack)
         {
@@ -144,7 +149,7 @@ public class HeroControl : MonoBehaviour, IControl
         }
 
         //IMoveMain.StopSpeedAtack(0.5f);
-        yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + _debuffAtackSpeed));
+        yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + BuffAtackSpeed));
         IsAttack = false;
     }
     private void RecordApproac()
@@ -332,15 +337,16 @@ public class HeroControl : MonoBehaviour, IControl
             _hexagonMain.Gap();
         }
     }
+    public void ActivationAbilities()
+    {
+        Image image;
+        _canvasManager.ActivationAbiliti(_namberTegAbiliti, this, out image);
+        _iAbilities.Initialization(image);
+    }
     public void StartGame()
     {
-        //временно 
         _hexagonMain = MapControl.FieldPosition(gameObject.layer, transform.position);
         _hexagonMain.Contact(IMoveMain);
-
-        //незабудь удалить
-
-        transform.position = (Vector2)_hexagonMain.transform.position;
 
         List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
         ContactFilter2D contactFilter2D = new ContactFilter2D();
@@ -353,7 +359,7 @@ public class HeroControl : MonoBehaviour, IControl
             if (hex != null && hex.TypeHexagon != 1 && !_ListHexAgr.Contains(hex))
             {
                 _ListHexAgr.Add(hex);
-                hex.ObjAgr = IMoveMain;
+                hex.ObjAgrDictionary[_priorityAgr] = IMoveMain;
             }
         }
 
@@ -369,9 +375,71 @@ public class HeroControl : MonoBehaviour, IControl
                 _ListHexAtack.Add(hex);
             }
         }
+
         _iAbilities.StartAbility();
+
         RecordApproac();
+
         CollisionDebuff(transform.position);
+    }
+    public void ChangeOfPosition()
+    {
+        for (int i = 0; i < _ListHexAgr.Count; i++)
+        {
+            _ListHexAgr[i].ObjAgrDictionary.Remove(_priorityAgr);
+        }
+        _ListHexAgr.Clear();
+        _ListHexAtack.Clear();
+        _iAbilities.DethAbility();
+
+        _hexagonMain.Gap();
+
+        StartGame();
+
+        TravelMessage();
+    }
+    public float GetAtackPowePrercent()
+    {
+        return ((_atackPower.Max + _atackPower.Min) / 2f) / 100f;
+    }
+    public void CircularAttack(float boostAtack, bool IsIgnotArmor)
+    {
+        for (int i = 0; i < AnApproac.Count; i++)
+        {
+            if (AnApproac[i].ObjAbove!=null && AnApproac[i].ObjAbove.GetObjMain().tag == "Enemy")
+            {
+                EnemyControl enemy = AnApproac[i].ObjAbove.GetObjMain().GetComponent<EnemyControl>();
+
+                float AtackPower = Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower) * boostAtack;
+
+                if (_isLongRangeAttack)
+                {
+                    IShell shell = Instantiate(_shell, transform.position, Quaternion.identity).GetComponent<IShell>();
+                    _iAbilities.AtackСorrection(shell, enemy, AtackPower, IsIgnotArmor);
+                }
+                else
+                {
+                    enemy.Damage(AtackPower, IsIgnotArmor);
+                }
+            }
+            if (AnApproac[i].ObjAboveFly != null && AnApproac[i].ObjAboveFly.GetObjMain().tag == "Enemy")
+            {
+                EnemyControl enemy = AnApproac[i].ObjAboveFly.GetObjMain().GetComponent<EnemyControl>();
+
+                float AtackPower = Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower) * boostAtack;
+
+                if (_isLongRangeAttack)
+                {
+                    IShell shell = Instantiate(_shell, transform.position, Quaternion.identity).GetComponent<IShell>();
+                    _iAbilities.AtackСorrection(shell, enemy, AtackPower, IsIgnotArmor);
+                }
+                else
+                {
+                    enemy.Damage(AtackPower, IsIgnotArmor);
+                }
+
+            }
+        }
     }
 
     #region Health
@@ -398,7 +466,7 @@ public class HeroControl : MonoBehaviour, IControl
     }
     public void Damage(float atack, bool ignoreArmor)
     {
-        float Protection = atack * _armor / 100;
+        float Protection = atack * (_armor + BuffArmor) / 100;
 
         if (!ignoreArmor)
         {
@@ -421,13 +489,17 @@ public class HeroControl : MonoBehaviour, IControl
     {
         HexagonControl hex;
 
-        if (!IMoveMain.IsFlight())
-        {
-            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
-            _debuffHealth = ((_healthPointsConst / 100) * hex.DebuffHex.Health)/ 60;
-            _debuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
-            IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed);
-        }
+        hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+
+        BuffHealth = ((_healthPointsConst / 100) * hex.DebuffHexHero.Health) / 60;
+        BuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHexHero.AtackSpeed;
+        float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexHero.Speed;
+
+        hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+        BuffHealth += ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
+        BuffAtackSpeed += (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
+        IMoveMain.DebuffSpeed(DeSpeed + ((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
+
     }
     public HexagonControl HexagonMain()
     {

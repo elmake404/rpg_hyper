@@ -21,7 +21,10 @@ public class Shell : MonoBehaviour, IShell
         }
         else
         {
-            _target.Damage(_damag, _isIgnotArmor);
+            if (_target!=null)
+            {
+                _target.Damage(_damag, _isIgnotArmor);
+            }
             Destroy(gameObject);
         }
     }

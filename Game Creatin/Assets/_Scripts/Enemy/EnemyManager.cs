@@ -23,8 +23,6 @@ public class EnemyManager : MonoBehaviour
     [Range(1, 5)]
     private int _maxHero;
     private int _namberPointSpawn = 0;
-
-
     void Start()
     {
         _enemies["flying"] = _flying;
@@ -54,7 +52,7 @@ public class EnemyManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         int n = 0;
 
-        while (true)
+        while (_listHeroGame.Count > 0)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -71,6 +69,7 @@ public class EnemyManager : MonoBehaviour
                     {
                         _enemyControls.Remove(name);
                     }
+
                     Enemy.First(this);
                     GoalSelection(Enemy, name);
 
@@ -95,6 +94,7 @@ public class EnemyManager : MonoBehaviour
                 break;
             }
         }
+        Debug.Log("end of monster production");
     }
     private HeroControl GetNearestHero(HexagonControl hexagon)
     {
@@ -175,6 +175,7 @@ public class EnemyManager : MonoBehaviour
         for (int i = 0; i < _listHeroGame.Count; i++)
         {
             _listHeroGame[i].StartGame();
+            _listHeroGame[i].ActivationAbilities() ;
         }
         for (int i = 0; i < _listHero.Count; i++)
         {

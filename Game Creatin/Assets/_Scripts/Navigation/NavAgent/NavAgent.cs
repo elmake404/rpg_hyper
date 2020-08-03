@@ -31,6 +31,8 @@ public class NavAgent : MonoBehaviour, IMove
             _isMove = false;
         }
 
+        Control.CollisionDebuff(transform.position);
+
         if (StaticLevelManager.IsGameFlove)
         {
             if (_isMove)
@@ -51,7 +53,6 @@ public class NavAgent : MonoBehaviour, IMove
                 Vector2 NextPos = (Vector2)transform.position + (Vector2)(_targetHexagon.transform.position - transform.position).normalized * 1.8f;
 
                 Control.Collision(NextPos);
-                Control.CollisionDebuff(transform.position);
 
                 if (_wayList.Count > 0)
                 {
@@ -88,16 +89,7 @@ public class NavAgent : MonoBehaviour, IMove
                     }
                 }
             }
-
-            //else
-            //    {
-            //        if (((Vector2)transform.position - Control.HexagonMain().position).magnitude >= 0.01f)
-            //        {
-            //            transform.position = Vector2.MoveTowards(transform.position, Control.HexagonMain().position, _speed);
-            //        }
-            //    }
         }
-
     }
     private IEnumerator StopSpeed(float time)
     {
@@ -161,7 +153,14 @@ public class NavAgent : MonoBehaviour, IMove
     #region interface 
     public void DebuffSpeed(float debuff)
     {
-        _debuffSpeed = debuff;
+        if (debuff < -_speedMove)
+        {
+            _debuffSpeed = -_speedMove;
+        }
+        else
+        {
+            _debuffSpeed = debuff;
+        }
     }
     public float GetSpeed()
     {

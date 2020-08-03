@@ -49,7 +49,7 @@ public class NavAgentFly : MonoBehaviour, IMove
                 Vector2 NextPos = (Vector2)transform.position + (Vector2)(_targetHexagon.transform.position - transform.position).normalized * 1.8f;
 
                 Control.Collision(NextPos);
-
+                Control.CollisionDebuff(transform.position);
 
                 if (_wayList.Count > 0)
                 {

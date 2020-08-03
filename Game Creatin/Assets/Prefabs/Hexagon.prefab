@@ -76,10 +76,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dad6645ce3b92348a10b70fda36daa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DebuffHex:
+    Speed: 0
+    Health: 0
+    AtackSpeed: 0
+  Sprite: {fileID: 5433359013891936446}
   _flag: {fileID: 977971286727681247, guid: 057f4a2ee177235428f92a64600f78f8, type: 3}
-  _free: {fileID: 8477872971343664298}
-  _let: {fileID: 0}
+  Data: {fileID: 0}
+  Elevation: {fileID: 0}
+  Floor: {fileID: 0}
+  position: {x: 0, y: 0}
+  Row: 0
+  Column: 0
   TypeHexagon: 0
+  layer: 0
+  IsFree: 1
+  IsFreeFly: 1
 --- !u!1 &8477872971343664298
 GameObject:
   m_ObjectHideFlags: 0

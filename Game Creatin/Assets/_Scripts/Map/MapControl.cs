@@ -17,7 +17,6 @@ public class MapControl : MonoBehaviour
     public static float X, Y;
     [HideInInspector]
     public static HexagonControl[,] MapNav = new HexagonControl[9, 20];//масив содержащий все 6-ти угольники
-
     void Awake()//измени
     {
         //enemyManager.InitializationList(_heroControls);
@@ -513,6 +512,108 @@ public class MapControl : MonoBehaviour
     {
         Vector2 difference = layer == 8 ? Vector2.zero : new Vector2(X, Y);
         HexagonControl hexagon = GetPositionOnTheMapBeforeStart(position - difference);
+
+        return hexagon;//нужный 6-ти угольник  
+    }
+    #endregion
+    #region Cast
+    private static HexagonControl OwnershipCheckMapCast(int _row, int _column, Vector2 pos)
+    {
+        List<HexagonControl> hexagons = new List<HexagonControl>();
+        int _columbias = (_row % 2) == 0 ? 1 : -1;
+        if ((MapNav[_row, _column].position - pos).magnitude <= 1.8f)
+        {
+            return MapNav[_row, _column];
+        }
+
+        #region AddToList
+        hexagons.Add(MapNav[_row, _column]);
+        if (_column < MapNav.GetLength(1) - 1)
+            hexagons.Add(MapNav[_row, _column + 1]);
+
+        if (_column > 0)
+            hexagons.Add(MapNav[_row, _column - 1]);
+
+        if (_row < MapNav.GetLength(0) - 1)
+        {
+            hexagons.Add(MapNav[_row + 1, _column]);
+
+            if (_column + _columbias > 0 && _column + _columbias < MapNav.GetLength(1) - 1)
+                hexagons.Add(MapNav[_row + 1, _column + _columbias]);
+        }
+
+        if (_row > 0)
+        {
+            hexagons.Add(MapNav[_row - 1, _column]);
+            if (_column + _columbias > 0 && _column + _columbias < MapNav.GetLength(1) - 1)
+                hexagons.Add(MapNav[_row - 1, _column + _columbias]);
+        }
+        #endregion
+
+        float mag = float.PositiveInfinity;
+        HexagonControl hexagon = null;
+        for (int i = 0; i < hexagons.Count; i++)
+        {
+            if (mag > (hexagons[i].position - pos).magnitude)
+            {
+
+                mag = (hexagons[i].position - pos).magnitude;
+                hexagon = hexagons[i];
+                if (mag <= 1.8f)
+                {
+                    return hexagons[i];
+                }
+            }
+        }
+
+        return hexagon;
+    }
+    public static HexagonControl GetPositionOnTheMapCast(Vector2 Position)// возвращает гексагон через позицию
+    {
+        float Y = (Position.y - _mapPos.y) / -3f;
+        int YMax = Mathf.Abs(Mathf.RoundToInt(Y));
+        float Difference = 0;
+        float f = ((Position.x - (_mapPos.x - 3.46f)) / 1.73f);
+        float R = Mathf.Floor(f) * 1.73f - (Position.x - (_mapPos.x - 3.46f));
+        int G = (int)f % 2 == 0 ? 0 : 1;
+
+        if (YMax - Y < Mathf.Abs(G - ((0.333f + ((0.333f / 1.73f) * Mathf.Abs(R))))))
+        {
+            Y = Mathf.Round(Y);
+        }
+        else
+        {
+            if (YMax - Y > 0)
+            {
+                Y = Mathf.Floor(Y);
+            }
+            else
+            {
+                Y = Mathf.Ceil(Y);
+            }
+        }
+
+        if ((Y % 2) != 0)
+        {
+            Difference = 0.5f;
+        }
+
+        float factor = (MapNav[0, 1].transform.position.x - MapNav[0, 0].transform.position.x);
+        float X = ((Position.x - _mapPos.x) / factor) + Difference;
+
+        X = X > 0 ? X : 0;
+        int XInt = Mathf.RoundToInt(X);
+
+        if (XInt >= MapNav.GetLength(1) || (XInt < 0) || (Y >= MapNav.GetLength(0)) || (Y < 0))
+        {
+            return null;
+        }
+        else
+            return OwnershipCheckMapCast((int)Y, XInt, Position);
+    }
+    public static HexagonControl FieldPositionMapCast(Vector2 position)//гексагон к которому принадлежит герой
+    {
+        HexagonControl hexagon = GetPositionOnTheMapCast(position);
 
         return hexagon;//нужный 6-ти угольник  
     }

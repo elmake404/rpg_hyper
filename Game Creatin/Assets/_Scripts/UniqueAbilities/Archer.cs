@@ -1,15 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Archer : MonoBehaviour, IAbilities
 {
-    private CanvasManager _canvasManager;
+    private Image _imageAbiliti;
     private List<bool> _listProtectionOptionsCrit = new List<bool>();
 
     [SerializeField]
     private float _critPower, _timeBoost, _timeForBoost;
-    private float _timeForBoostConst, _timeBoostConst;
+    private float _timeForBoostConst, _timeBoostConst, _fillAmountTime;
     [SerializeField]
     private int _critСhance, _attackAcceleration;
     private bool _boostSpeed, _activationBoost;
@@ -18,21 +19,23 @@ public class Archer : MonoBehaviour, IAbilities
     {
         _timeForBoostConst = _timeForBoost;
         _timeBoostConst = _timeBoost;
+        _timeForBoost = 0;
+        _fillAmountTime = Time.fixedDeltaTime / _timeForBoostConst;
         RandomFilling();
     }
     void FixedUpdate()
     {
-        if (StaticLevelManager.IsGameFlove)
+        if (StaticLevelManager.IsGameFlove && _imageAbiliti != null)
         {
             if (_timeForBoost <= 0 && !_boostSpeed)
             {
                 _boostSpeed = true;
-                //_timeForBoost = _timeForBoostConst;
             }
 
             if (_timeForBoost > 0)
             {
                 _timeForBoost -= Time.deltaTime;
+                _imageAbiliti.fillAmount -= _fillAmountTime;
             }
 
             if (_activationBoost)
@@ -91,6 +94,7 @@ public class Archer : MonoBehaviour, IAbilities
             _activationBoost = true;
             _boostSpeed = false;
             _timeForBoost = _timeForBoostConst;
+            _imageAbiliti.fillAmount = 1;
         }
 
         if (_activationBoost)
@@ -112,9 +116,10 @@ public class Archer : MonoBehaviour, IAbilities
     {
         shell.Initialization(enemy, damag, isIgnorArmor);
     }
-    public void Initialization(CanvasManager canvasManager)
+    public void Initialization(Image image)
     {
-        _canvasManager = canvasManager;
+        _imageAbiliti = image;
+        _imageAbiliti.fillAmount = 0;
     }
 
 }
