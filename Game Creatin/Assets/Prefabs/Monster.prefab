@@ -416,6 +416,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mummy_Mon
       objectReference: {fileID: 0}
+    - target: {fileID: 2192772209776547570, guid: 68e2fab679f2bc143923097c05fc090e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68e2fab679f2bc143923097c05fc090e, type: 3}
 --- !u!4 &7659741281665394645 stripped

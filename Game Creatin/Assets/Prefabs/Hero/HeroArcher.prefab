@@ -132,7 +132,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
-  _shell: {fileID: 6356909223878220558, guid: b626d12b619cf264185b710da85151bc, type: 3}
+  _shell: {fileID: 1570838261583347939, guid: e119f68850746274bba7c5a80de6cee3, type: 3}
+  _fairPos: {fileID: 5394098842759922982}
   _atackPower:
     Max: 10
     Min: 15

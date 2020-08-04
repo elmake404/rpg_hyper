@@ -18,6 +18,8 @@ public class HeroControl : MonoBehaviour, IControl
     private Transform _awakePoint;
     [SerializeField]
     private GameObject _shell;
+    [SerializeField]
+    private Transform _fairPos;
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
@@ -140,7 +142,9 @@ public class HeroControl : MonoBehaviour, IControl
 
         if (_isLongRangeAttack)
         {
-            IShell shell = Instantiate(_shell, transform.position, Quaternion.identity).GetComponent<IShell>();
+            Quaternion rot = Quaternion.LookRotation(EnemyTarget.transform.position - _fairPos.position);
+            rot.eulerAngles = new Vector3(0,0,-rot.eulerAngles.x); 
+            IShell shell = Instantiate(_shell, _fairPos.position,rot ).GetComponent<IShell>();
             _iAbilities.AtackСorrection(shell, EnemyTarget, AtackPower, IsIgnotArmor);
         }
         else
