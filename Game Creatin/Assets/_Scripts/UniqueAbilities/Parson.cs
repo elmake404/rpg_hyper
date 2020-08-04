@@ -40,7 +40,7 @@ public class Parson : MonoBehaviour, IAbilities
     private void Heal()
     {
         HeroControl hero = _manager.GetHeroWithMinimalHealth();
-        hero.AdditionalTreatment((hero.GetMaxHealth() / 100f) * _healthRecoveryPercentage);
+        hero.AdditionalTreatment(/*(hero.GetMaxHealth() / 100f) **/ _healthRecoveryPercentage);
     }
     public float Armor(float DamagPower)
     {

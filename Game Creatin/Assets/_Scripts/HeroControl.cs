@@ -61,7 +61,7 @@ public class HeroControl : MonoBehaviour, IControl
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
         _agrDistensConst = (1.73f * (_agrDistens * 2)) + 0.1f;
         _healthPointsConst = _healthPoints;
-        _regeneration = (_healthPointsConst * _powerRegeneration / 100f) / 60;
+        _regeneration = _powerRegeneration / 60;
         //_navigationHero.Control = this;
 
         IControlMain = this;
@@ -406,7 +406,7 @@ public class HeroControl : MonoBehaviour, IControl
     {
         for (int i = 0; i < AnApproac.Count; i++)
         {
-            if (AnApproac[i].ObjAbove!=null && AnApproac[i].ObjAbove.GetObjMain().tag == "Enemy")
+            if (AnApproac[i].ObjAbove != null && AnApproac[i].ObjAbove.GetObjMain().tag == "Enemy")
             {
                 EnemyControl enemy = AnApproac[i].ObjAbove.GetObjMain().GetComponent<EnemyControl>();
 

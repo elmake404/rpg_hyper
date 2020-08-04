@@ -29,7 +29,7 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
         _healthPointsConst = _healthPoints;
-        _regeneration = (_healthPointsConst * _powerRegeneration / 100f) / 60;
+        _regeneration = _powerRegeneration/60;
 
         IMoveMain = GetComponent<IMove>();
         IControlMain = this;
@@ -443,7 +443,7 @@ public class EnemyControl : MonoBehaviour, IControl
         }
         else
         {
-            hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+            hex = MapControl.FieldPositionFly(gameObject.layer, NextPos);
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemyFly.Health) / 50f;
             _damagEnvironment = hex.DebuffHexEnemyFly.Damag / 50f;
             _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemyFly.AtackSpeed;

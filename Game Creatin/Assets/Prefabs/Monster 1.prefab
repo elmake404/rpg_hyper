@@ -50,12 +50,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hexagonMain: {fileID: 0}
-  _healthPoints: 50
-  _atackSpeed: 0
-  _attackPower: 1
+  _healthPoints: 120
+  _atackSpeed: 0.3
+  _attackPower: 17
   _atackDistens: 1
-  _powerRegeneration: 0
-  _armor: 0
+  _powerRegeneration: 5
+  _armor: 3
   AnApproac: []
   HeroTarget: {fileID: 0}
   Pursuer: []
