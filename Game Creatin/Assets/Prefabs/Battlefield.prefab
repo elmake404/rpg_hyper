@@ -1242,9 +1242,6 @@ MonoBehaviour:
   - {fileID: 114872429582880973}
   - {fileID: 4967315856103352213}
   - {fileID: 4089582869827569419}
-  _heroControls: []
-  _arreyVertex: []
-  _elevation: []
 --- !u!23 &265076691286186672
 MeshRenderer:
   m_ObjectHideFlags: 0
