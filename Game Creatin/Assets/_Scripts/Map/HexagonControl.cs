@@ -23,7 +23,7 @@ public class HexagonControl : MonoBehaviour
     [SerializeField]
     private GameObject _flag;
     public DataHexNav Data;
-    private Dictionary<HexagonControl, List<HexagonControl>> ShortWay = 
+    private Dictionary<HexagonControl, List<HexagonControl>> ShortWay =
         new Dictionary<HexagonControl, List<HexagonControl>>();
 
     public IMove ObjAbove;// интерфейс стоящего
@@ -42,6 +42,7 @@ public class HexagonControl : MonoBehaviour
     public int layer;
     public bool IsFree = true;
     public bool IsFreeFly = true;
+    public bool Is;
 
     private void Awake()
     {
@@ -58,7 +59,7 @@ public class HexagonControl : MonoBehaviour
             }
         }
 
-        if (TypeHexagon!=1)
+        if (TypeHexagon != 1)
             DataRecords();
     }
     private void DataRecords()
@@ -77,7 +78,7 @@ public class HexagonControl : MonoBehaviour
 
             for (int i = 0; i < this.Data.Way.Count; i++)
             {
-                if (this.Data.Way[i] !=null)
+                if (this.Data.Way[i] != null)
                 {
                     ListWay.Add(this.Data.Way[i]);
                 }
@@ -179,6 +180,9 @@ public class HexagonControl : MonoBehaviour
     }
     public void NamberHex()
     {
+        layer = gameObject.layer;
+        position = transform.position;
+
         if (TypeHexagon != 2)
         {
             Row = System.Convert.ToInt32
@@ -233,6 +237,14 @@ public class HexagonControl : MonoBehaviour
         else
         {
             this.Data = Data;
+        }
+    }
+    public void DataRemove()
+    {
+        DataHexNav dataHex = GetComponent<DataHexNav>();
+        if (dataHex != null)
+        {
+            DestroyImmediate(dataHex);
         }
     }
     public List<HexagonControl> GetWay(HexagonControl where)

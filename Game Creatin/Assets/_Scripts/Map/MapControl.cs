@@ -37,6 +37,7 @@ public class MapControl : MonoBehaviour
     public void DataRecords()
     {
         _mapPos = transform.position;
+        
         for (int i = 0; i < hexagons.Length; i++)
         {
             hexagons[i].name = i.ToString();
@@ -46,8 +47,23 @@ public class MapControl : MonoBehaviour
                 MapNav[i, j] = hexagon;
                 hexagons[i].GetChild(j).name = j.ToString();
                 hexagon.NamberHex();
+                hexagon.GetHexagonMain().NamberHex();
                 if (hexagon.GetHexagonMain().TypeHexagon != 1)
                     _navSurface.ListHexagonControls.Add(hexagon.GetHexagonMain());
+            }
+        }
+    }
+    public void DataRemove()
+    {        
+        for (int i = 0; i < hexagons.Length; i++)
+        {
+            hexagons[i].name = i.ToString();
+            for (int j = 0; j < hexagons[i].childCount; j++)
+            {
+                
+                HexagonControl hexagon = hexagons[i].GetChild(j).GetComponent<HexagonControl>();
+                hexagon.GetHexagonMain().DataRemove();
+                hexagon.DataRemove();
             }
         }
     }
@@ -66,8 +82,16 @@ public class MapControl : MonoBehaviour
         {
             _column = MapNav.GetLength(1) - 1;
         }
+        else if (_column < 0)
+        {
+            _column = 0;
+        }
+
+
         List<HexagonControl> hexagons = new List<HexagonControl>();
+
         int _columbias = (_row % 2) == 0 ? 1 : -1;
+
         if ((MapNav[_row, _column].position - pos).magnitude <= 1.8f)
         {
             Row = _row;
@@ -223,6 +247,8 @@ public class MapControl : MonoBehaviour
     }
     public static HexagonControl[] GetPositionOnTheMap(Vector2 Target, Vector2 Position) // возвращает гексагон через позицию (может определить два блока)
     {
+
+
         Vector2 Normalized = (Target - Position).normalized;
         float XTarget = (float)System.Math.Round(Normalized.x, 1);
         float YTarget = (float)System.Math.Round(Normalized.y, 1);
@@ -257,6 +283,7 @@ public class MapControl : MonoBehaviour
         }
 
         float factor = (MapNav[0, 1].position.x - MapNav[0, 0].position.x);
+        //Debug.Log(factor);
         float X = ((Position.x - _mapPos.x) / factor) + Difference;
 
         X = X > 0 ? X : 0;
@@ -618,7 +645,6 @@ public class MapControl : MonoBehaviour
         return hexagon;//нужный 6-ти угольник  
     }
     #endregion
-
     #region Fly
     private static HexagonControl OwnershipCheckFly(int _row, int _column, Vector2 pos)
     {

@@ -6,6 +6,7 @@ using UnityEngine;
 public class NavAgent : MonoBehaviour, IMove
 {
     private List<HexagonControl> _wayList = new List<HexagonControl>();
+    [SerializeField]
     private HexagonControl _targetHexagon;
     private HexagonControl _currentPos;
 
@@ -31,10 +32,11 @@ public class NavAgent : MonoBehaviour, IMove
             _isMove = false;
         }
 
-        Control.CollisionDebuff(transform.position);
 
         if (StaticLevelManager.IsGameFlove)
         {
+            Control.CollisionDebuff(transform.position);
+
             if (_isMove)
             {
                 _targetHexagon = _wayList[0];
@@ -43,7 +45,8 @@ public class NavAgent : MonoBehaviour, IMove
                 {
                     gameObject.layer = 11;
                 }
-                else if (_targetHexagon.TypeHexagon == 0 && gameObject.layer == 11)
+                else if (((_targetHexagon.TypeHexagon == 3 && HexagonMain().TypeHexagon == 3) || _targetHexagon.TypeHexagon == 0)
+                    && gameObject.layer == 11)
                 {
                     gameObject.layer = 8;
                 }

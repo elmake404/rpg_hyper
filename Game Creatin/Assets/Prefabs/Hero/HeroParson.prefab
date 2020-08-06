@@ -149,7 +149,7 @@ MonoBehaviour:
   EnemyTarget: {fileID: 0}
   IsAttack: 0
   IsStopAtack: 0
-  Animator: {fileID: 0}
+  Animator: {fileID: 7925802283032830708}
   AnApproac: []
   Pursuer: []
   BuffHealth: 0
@@ -189,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d289ac19d188d824781f479ae1822106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _targetHexagon: {fileID: 0}
   _isMove: 0
   _isClever: 1
   _speed: 0.17
@@ -519,6 +520,12 @@ PrefabInstance:
 --- !u!4 &7925802283507411532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 158381921548911996, guid: 29a90d282ea691b44b8a23ee0dc601a2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8056012482553327408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7925802283032830708 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 158381920807472580, guid: 29a90d282ea691b44b8a23ee0dc601a2,
     type: 3}
   m_PrefabInstance: {fileID: 8056012482553327408}
   m_PrefabAsset: {fileID: 0}

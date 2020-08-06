@@ -197,6 +197,7 @@ public static class NavStatic
 
                 if (!controls[i].GetHexagonMain().FreedomTestType(elevation) || (!controls[i].GetHexagonMain().IsFree) && !controls[i].GetHexagonMain().ObjAbove.IsGo())
                 {
+
                     return false;
                 }
             }

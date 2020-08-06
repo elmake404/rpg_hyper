@@ -11,6 +11,13 @@ public class NavInspector : Editor
 	{
 		DrawDefaultInspector();
 		_surface = target as NavSurface;
+		if (GUILayout.Button("Data Remove"))
+		{
+			Undo.RecordObject(_surface, "Data Remove");
+			_surface.DataRemove();
+			EditorUtility.SetDirty(_surface);
+		}
+
 		if (GUILayout.Button("Data Records"))
 		{
 			Undo.RecordObject(_surface, "Data Records");

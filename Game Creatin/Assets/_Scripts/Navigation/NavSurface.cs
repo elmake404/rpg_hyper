@@ -29,7 +29,10 @@ public class NavSurface : MonoBehaviour
         {
             ListHexagonControls[i].CheckDataComponent();
         }
-
+    }
+    public void DataRemove()
+    {
+        Map.DataRemove();
     }
     public void CreatingEdge()
     {
@@ -40,14 +43,14 @@ public class NavSurface : MonoBehaviour
             ListHexagonControls[i].Data.CreateNewList() ;
         }
 
-        for (int i = 0; i <  GraphNav.Length - 1; i++)
+        for (int i = 0; i < GraphNav.Length- 1; i++)
         {
             for (int j = i + 1; j < GraphNav.Length; j++)
             {
                 bool IsElevation;
 
-                Vector2 StartPosition = GraphNav[i].NodeHexagon.transform.position;
-                Vector2 direction = GraphNav[j].NodeHexagon.transform.position;
+                Vector2 StartPosition = GraphNav[i].NodeHexagon.GetArrayElement().transform.position;
+                Vector2 direction = GraphNav[j].NodeHexagon.GetArrayElement().transform.position;
 
                 bool NoRibs = false;
 
@@ -97,7 +100,6 @@ public class NavSurface : MonoBehaviour
                     Debug.Log("Pizdec");
                     continue;
                 }
-
                 GraphNav[i].NodeHexagon.Data.SaveTheWay(GraphNav[i].ListUnrelated[j].NodeHexagon, hexagonList);
                 hexagonList.Reverse();
                 GraphNav[i].ListUnrelated[j].NodeHexagon.Data.SaveTheWay(GraphNav[i].NodeHexagon, hexagonList);
