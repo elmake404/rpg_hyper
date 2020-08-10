@@ -6,9 +6,10 @@ using UnityEngine;
 public class NavAgent : MonoBehaviour, IMove
 {
     private List<HexagonControl> _wayList = new List<HexagonControl>();
-    [SerializeField]
     private HexagonControl _targetHexagon;
     private HexagonControl _currentPos;
+    [SerializeField]
+    private Animator _animator;
 
     [SerializeField]
     private bool _isMove, _isClever;
@@ -27,6 +28,18 @@ public class NavAgent : MonoBehaviour, IMove
     }
     private void FixedUpdate()
     {
+        if (_animator != null)
+        {
+            if (!_animator.GetBool("Go") && _isMove)
+            {
+                _animator.SetBool("Go", _isMove);
+            }
+            else if (_animator.GetBool("Go") && !_isMove)
+            {
+                _animator.SetBool("Go", _isMove);
+            }
+        }
+
         if (_wayList.Count <= 0)
         {
             _isMove = false;
@@ -46,7 +59,8 @@ public class NavAgent : MonoBehaviour, IMove
                     gameObject.layer = 11;
                 }
                 else if (((_targetHexagon.TypeHexagon == 3 && HexagonMain().TypeHexagon == 3) || _targetHexagon.TypeHexagon == 0)
-                    && gameObject.layer == 11)
+                          && gameObject.layer == 11)
+
                 {
                     gameObject.layer = 8;
                 }
