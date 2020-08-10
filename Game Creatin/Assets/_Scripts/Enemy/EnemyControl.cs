@@ -1,18 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class EnemyControl : MonoBehaviour, IControl
 {
     private EnemyManager _enemyManager;
-    [SerializeField]
     private HexagonControl _hexagonMain;
 
     [SerializeField]
     private float _healthPoints, _atackSpeed, _attackPower, _atackDistens, _powerRegeneration, _armor;
     private float _atackDistensConst, _healthPointsConst, _regeneration, _debuffHealth, _debuffAtackSpeed, _damagEnvironment;
+    private int _animatorSpeedAtack, _animatorSpeedGo;
 
+    [SerializeField]
+    private Animator _animator;
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
     [HideInInspector]
@@ -22,6 +25,7 @@ public class EnemyControl : MonoBehaviour, IControl
 
     [HideInInspector]
     public bool IsAttack;
+
     public IMove IMoveMain;
     public IControl IControlMain;
 
@@ -52,6 +56,25 @@ public class EnemyControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Walk Forward In Place"))
+        {
+            _animator.speed = 1;
+            Debug.Log(_animator.speed);
+        }
+        else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Projectile Attack Forward"))
+        {
+            _animator.speed = 1;
+            Debug.Log(_animator.speed);
+
+        }
+        else
+        {
+            _animator.speed = 1;
+            Debug.Log(_animator.speed);
+
+        }
+
+
         Damage(_damagEnvironment,false);
 
         if (_healthPoints < _healthPointsConst)
@@ -123,9 +146,16 @@ public class EnemyControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         IsAttack = true;
+
+        _animator.SetBool("Atack",true);
+        yield return new WaitForSeconds(0.02f);
+        _animator.SetBool("Atack", false);
+        yield return new WaitForSeconds(_atackSpeed / 2);
+
         HeroTarget.Damage(_attackPower, false);
         IMoveMain.StopSpeedAtack(_atackSpeed + _debuffAtackSpeed);
-        yield return new WaitForSeconds(_atackSpeed + _debuffAtackSpeed);
+
+        yield return new WaitForSeconds(_atackSpeed/2 + _debuffAtackSpeed);
         IsAttack = false;
     }
     private void RecordApproac()

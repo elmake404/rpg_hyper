@@ -50,13 +50,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d1167d4fc7ec14ab31b6cbfb858a07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hexagonMain: {fileID: 0}
   _healthPoints: 150
-  _atackSpeed: 0.5
+  _atackSpeed: 1
   _attackPower: 15
   _atackDistens: 1
   _powerRegeneration: 7
   _armor: 5
+  _animator: {fileID: 2754785981116019865}
   AnApproac: []
   HeroTarget: {fileID: 0}
   Pursuer: []
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d289ac19d188d824781f479ae1822106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetHexagon: {fileID: 0}
+  _animator: {fileID: 2754785981116019865}
   _isMove: 0
   _isClever: 0
   _speed: 0.1
@@ -293,6 +293,12 @@ PrefabInstance:
 --- !u!4 &2754785981108558713 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2708408022891326448, guid: 4b8b9f344b09b0041a3893afc508ed95,
+    type: 3}
+  m_PrefabInstance: {fileID: 264804173415116937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2754785981116019865 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2708408022901163024, guid: 4b8b9f344b09b0041a3893afc508ed95,
     type: 3}
   m_PrefabInstance: {fileID: 264804173415116937}
   m_PrefabAsset: {fileID: 0}
