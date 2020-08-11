@@ -12,6 +12,7 @@ public class HeroControl : MonoBehaviour, IControl
         public float Min;
     }
 
+
     [SerializeField]
     private CanvasManager _canvasManager;
     [SerializeField]
@@ -24,6 +25,7 @@ public class HeroControl : MonoBehaviour, IControl
     private HexagonControl _hexagonMain;
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
+    private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
 
     private IAbilities _iAbilities;
 
@@ -143,8 +145,8 @@ public class HeroControl : MonoBehaviour, IControl
         if (_isLongRangeAttack)
         {
             Quaternion rot = Quaternion.LookRotation(EnemyTarget.transform.position - _fairPos.position);
-            rot.eulerAngles = new Vector3(0,0,-rot.eulerAngles.x); 
-            IShell shell = Instantiate(_shell, _fairPos.position,rot ).GetComponent<IShell>();
+            rot.eulerAngles = new Vector3(0, 0, -rot.eulerAngles.x);
+            IShell shell = Instantiate(_shell, _fairPos.position, rot).GetComponent<IShell>();
             _iAbilities.AtackСorrection(shell, EnemyTarget, AtackPower, IsIgnotArmor);
         }
         else
@@ -349,6 +351,8 @@ public class HeroControl : MonoBehaviour, IControl
     }
     public void StartGame()
     {
+        _awakePoint.gameObject.SetActive(false);
+
         _hexagonMain = MapControl.FieldPosition(gameObject.layer, transform.position);
         _hexagonMain.Contact(IMoveMain);
 
@@ -385,6 +389,37 @@ public class HeroControl : MonoBehaviour, IControl
         RecordApproac();
 
         CollisionDebuff(transform.position);
+    }
+    public void Marker(Vector2 pos)
+    {
+        for (int i = 0; i < _listHexagonCast.Count; i++)
+        {
+            _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+        }
+        _listHexagonCast.Clear();
+
+        List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
+        ContactFilter2D contactFilter2D = new ContactFilter2D();
+
+        Physics2D.CircleCast(pos, _atackDistensConst, Vector2.zero, contactFilter2D, hits2D);
+        for (int i = 0; i < hits2D.Count; i++)
+        {
+            HexagonControl hexagon = hits2D[i].collider.GetComponent<HexagonControl>();
+            if (!_listHexagonCast.Contains(hexagon.GetHexagonMain())
+                && (pos - hexagon.GetArrayElement().position).magnitude <= _atackDistensConst)
+            {
+                _listHexagonCast.Add(hexagon.GetHexagonMain());
+                hexagon.GetHexagonMain().Sprite.color = new Color(0.1154f, 0.3490566f, 0.07409222f, 1);
+            }
+        }
+    }
+    public void MarkerClear()
+    {
+        for (int i = 0; i < _listHexagonCast.Count; i++)
+        {
+            _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+        }
+        _listHexagonCast.Clear();
     }
     public void ChangeOfPosition()
     {
@@ -444,6 +479,11 @@ public class HeroControl : MonoBehaviour, IControl
 
             }
         }
+    }
+    public void Shutdown()
+    {
+        _awakePoint.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     #region Health

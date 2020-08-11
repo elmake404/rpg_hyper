@@ -181,7 +181,7 @@ public class EnemyManager : MonoBehaviour
         {
             if (!_listHeroGame.Contains(_listHero[i]))
             {
-                _listHero[i].GetComponent<NavAgent>().enabled = false;
+                _listHero[i].Shutdown();
             }
         }
 

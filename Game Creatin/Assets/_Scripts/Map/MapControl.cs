@@ -498,16 +498,6 @@ public class MapControl : MonoBehaviour
             }
         }
 
-        //if (Y >= MapNav.GetLength(0))
-        //{
-        //    Y = MapNav.GetLength(0) - 1;
-        //}
-        //else if (Y < 0)
-        //{
-        //    Y = 0;
-        //}
-
-
         if ((Y % 2) != 0)
         {
             Difference = 0.5f;
@@ -518,15 +508,6 @@ public class MapControl : MonoBehaviour
 
         X = X > 0 ? X : 0;
         int XInt = Mathf.RoundToInt(X);
-
-        //if (XInt >= MapNav.GetLength(1))
-        //{
-        //    XInt = MapNav.GetLength(1) - 1;
-        //}
-        //else if (XInt < 0)
-        //{
-        //    XInt = 0;
-        //}
 
         if (XInt >= MapNav.GetLength(1) || (XInt < 0) || (Y >= MapNav.GetLength(0)) || (Y < 0))
         {

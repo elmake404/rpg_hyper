@@ -145,7 +145,6 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
         }
 
     }
-
     public void initializationHero(HeroControl hero, Image img)
     {
         _heroControl = hero;

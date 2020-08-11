@@ -7,6 +7,8 @@ public class PlayerControl : MonoBehaviour
     private Camera _camera;
     private HeroControl _heroControl;
     private Vector2 _startPos, _currPos;
+    private HexagonControl _hexPosHero;
+
     private void Awake()
     {
         //StaticLevelManager.IsGameFlove = true;
@@ -39,21 +41,33 @@ public class PlayerControl : MonoBehaviour
                 {
                     _startPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
                 }
-
                 _currPos = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2));
+                HexagonControl hex = MapControl.FieldPositionMapCast(_currPos);
 
                 if (_heroControl != null)
                 {
                     _heroControl.transform.position = _currPos;
+                    if (hex != null && hex != _hexPosHero)
+                    {
+                        _hexPosHero = hex;
+
+                        _heroControl.Marker(_hexPosHero.position);
+                    }
+                    if (hex==null)
+                    {
+                        _heroControl.MarkerClear() ;
+                    }
                 }
             }
             else if (Input.GetMouseButtonUp(0))
             {
                 if (_heroControl != null)
                 {
+                    _heroControl.MarkerClear();
                     _heroControl.InstallHero();
                     _heroControl = null;
                 }
+                _hexPosHero = null;
             }
         }
         else

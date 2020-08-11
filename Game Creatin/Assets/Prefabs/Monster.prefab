@@ -57,6 +57,8 @@ MonoBehaviour:
   _powerRegeneration: 7
   _armor: 5
   _animator: {fileID: 2754785981116019865}
+  _go: {fileID: 7400000, guid: 203ba7013bdc7e44c8c41bffb6cbde87, type: 3}
+  _atack: {fileID: 7400000, guid: 62783596cf9b39a49b77b38c2d8bd621, type: 3}
   AnApproac: []
   HeroTarget: {fileID: 0}
   Pursuer: []

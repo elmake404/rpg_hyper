@@ -63,17 +63,14 @@ public class EnemyControl : MonoBehaviour, IControl
             if (_animator.GetNextAnimatorClipInfo(0)[0].clip == _go)
             {
                 _animator.speed = 1 + _animatorSpeedGo;
-                //Debug.Log(_animator.speed);
             }
             else if (_animator.GetNextAnimatorClipInfo(0)[0].clip == _atack)
             {
                 _animator.speed = 1 + _animatorSpeedAtack;
-                //Debug.Log(_animator.speed);
             }
             else
             {
                 _animator.speed = 1;
-                //Debug.Log(_animator.speed);
             }
         }
         else
@@ -81,21 +78,17 @@ public class EnemyControl : MonoBehaviour, IControl
             if (_animator.GetCurrentAnimatorClipInfo(0)[0].clip == _go)
             {
                 _animator.speed = 1 + _animatorSpeedGo;
-                //Debug.Log(_animator.speed);
             }
             else if (_animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atack)
             {
                 _animator.speed = 1 + _animatorSpeedAtack;
-                //Debug.Log(_animator.speed);
             }
             else
             {
                 _animator.speed = 1;
-                //Debug.Log(_animator.speed);
             }
 
         }
-        //Debug.Log(_animator.speed);
 
         Damage(_damagEnvironment, false);
 
@@ -172,10 +165,10 @@ public class EnemyControl : MonoBehaviour, IControl
         _animator.SetBool("Atack", true);
         yield return new WaitForSeconds(0.02f);
         _animator.SetBool("Atack", false);
-        yield return new WaitForSeconds(_atackSpeed / 2);
+        yield return new WaitForSeconds(_atack.length+((_atack.length/100)*((_animatorSpeedAtack*(-100))/2)));
 
         HeroTarget.Damage(_attackPower, false);
-        IMoveMain.StopSpeedAtack(_atackSpeed + _debuffAtackSpeed);
+        IMoveMain.StopSpeedAtack(((_atack.length / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
 
         yield return new WaitForSeconds(_atackSpeed / 2 + _debuffAtackSpeed);
         IsAttack = false;
@@ -485,7 +478,7 @@ public class EnemyControl : MonoBehaviour, IControl
             hex = MapControl.FieldPosition(gameObject.layer, NextPos);
 
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemy.Health) / 50f;
-            _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemy.AtackSpeed;
+            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemy.AtackSpeed/2);
             _damagEnvironment = hex.DebuffHexEnemy.Damag / 50f;
             float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemy.Speed;
             _animatorSpeedAtack = hex.DebuffHexEnemy.AtackSpeed / 100;
@@ -498,14 +491,13 @@ public class EnemyControl : MonoBehaviour, IControl
             IMoveMain.DebuffSpeed(DeSpeed + ((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
             _animatorSpeedAtack += hex.DebuffHex.AtackSpeed / 100;
             _animatorSpeedGo += hex.DebuffHex.Speed / 100;
-            Debug.Log(_animatorSpeedAtack);
         }
         else
         {
             hex = MapControl.FieldPositionFly(gameObject.layer, NextPos);
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemyFly.Health) / 50f;
             _damagEnvironment = hex.DebuffHexEnemyFly.Damag / 50f;
-            _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemyFly.AtackSpeed;
+            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemyFly.AtackSpeed/2);
             IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemyFly.Speed);
         }
     }
