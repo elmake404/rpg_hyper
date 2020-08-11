@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class EnemyControl : MonoBehaviour, IControl
@@ -12,10 +10,12 @@ public class EnemyControl : MonoBehaviour, IControl
     [SerializeField]
     private float _healthPoints, _atackSpeed, _attackPower, _atackDistens, _powerRegeneration, _armor;
     private float _atackDistensConst, _healthPointsConst, _regeneration, _debuffHealth, _debuffAtackSpeed, _damagEnvironment;
-    private int _animatorSpeedAtack, _animatorSpeedGo;
+    private float _animatorSpeedAtack, _animatorSpeedGo;
 
     [SerializeField]
     private Animator _animator;
+    [SerializeField]
+    private AnimationClip _go, _atack;
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
     [HideInInspector]
@@ -31,9 +31,11 @@ public class EnemyControl : MonoBehaviour, IControl
 
     private void Awake()
     {
+        _animatorSpeedGo = 1;
+        _animatorSpeedAtack = 1;
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
         _healthPointsConst = _healthPoints;
-        _regeneration = _powerRegeneration/60;
+        _regeneration = _powerRegeneration / 60;
 
         IMoveMain = GetComponent<IMove>();
         IControlMain = this;
@@ -56,26 +58,46 @@ public class EnemyControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
-        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Walk Forward In Place"))
+        if (_animator.GetNextAnimatorClipInfo(0).Length != 0)
         {
-            _animator.speed = 1;
-            Debug.Log(_animator.speed);
-        }
-        else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Projectile Attack Forward"))
-        {
-            _animator.speed = 1;
-            Debug.Log(_animator.speed);
-
+            if (_animator.GetNextAnimatorClipInfo(0)[0].clip == _go)
+            {
+                _animator.speed = 1 + _animatorSpeedGo;
+                //Debug.Log(_animator.speed);
+            }
+            else if (_animator.GetNextAnimatorClipInfo(0)[0].clip == _atack)
+            {
+                _animator.speed = 1 + _animatorSpeedAtack;
+                //Debug.Log(_animator.speed);
+            }
+            else
+            {
+                _animator.speed = 1;
+                //Debug.Log(_animator.speed);
+            }
         }
         else
         {
-            _animator.speed = 1;
-            Debug.Log(_animator.speed);
+            if (_animator.GetCurrentAnimatorClipInfo(0)[0].clip == _go)
+            {
+                _animator.speed = 1 + _animatorSpeedGo;
+                //Debug.Log(_animator.speed);
+            }
+            else if (_animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atack)
+            {
+                _animator.speed = 1 + _animatorSpeedAtack;
+                //Debug.Log(_animator.speed);
+            }
+            else
+            {
+                _animator.speed = 1;
+                //Debug.Log(_animator.speed);
+            }
 
         }
+        //Debug.Log(_animator.speed);
 
-
-        Damage(_damagEnvironment,false);
+        Damage(_damagEnvironment, false);
 
         if (_healthPoints < _healthPointsConst)
         {
@@ -147,7 +169,7 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         IsAttack = true;
 
-        _animator.SetBool("Atack",true);
+        _animator.SetBool("Atack", true);
         yield return new WaitForSeconds(0.02f);
         _animator.SetBool("Atack", false);
         yield return new WaitForSeconds(_atackSpeed / 2);
@@ -155,7 +177,7 @@ public class EnemyControl : MonoBehaviour, IControl
         HeroTarget.Damage(_attackPower, false);
         IMoveMain.StopSpeedAtack(_atackSpeed + _debuffAtackSpeed);
 
-        yield return new WaitForSeconds(_atackSpeed/2 + _debuffAtackSpeed);
+        yield return new WaitForSeconds(_atackSpeed / 2 + _debuffAtackSpeed);
         IsAttack = false;
     }
     private void RecordApproac()
@@ -345,7 +367,7 @@ public class EnemyControl : MonoBehaviour, IControl
 
             foreach (var Item in hex.ObjAgrDictionary)
             {
-                if (Item.Key<PriorityAgr)
+                if (Item.Key < PriorityAgr)
                 {
                     PriorityAgr = Item.Key;
                     hero = Item.Value;
@@ -459,17 +481,24 @@ public class EnemyControl : MonoBehaviour, IControl
 
         if (!IMoveMain.IsFlight())
         {
+
             hex = MapControl.FieldPosition(gameObject.layer, NextPos);
+
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemy.Health) / 50f;
             _debuffAtackSpeed = (_atackSpeed / 100f) * hex.DebuffHexEnemy.AtackSpeed;
             _damagEnvironment = hex.DebuffHexEnemy.Damag / 50f;
-           float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemy.Speed;
+            float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemy.Speed;
+            _animatorSpeedAtack = hex.DebuffHexEnemy.AtackSpeed / 100;
+            _animatorSpeedGo = hex.DebuffHexEnemy.Speed / 100;
 
             hex = MapControl.FieldPosition(gameObject.layer, NextPos);
             _debuffHealth += ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
             _debuffAtackSpeed += (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
             _damagEnvironment += hex.DebuffHex.Damag / 50f;
-            IMoveMain.DebuffSpeed(DeSpeed+((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
+            IMoveMain.DebuffSpeed(DeSpeed + ((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
+            _animatorSpeedAtack += hex.DebuffHex.AtackSpeed / 100;
+            _animatorSpeedGo += hex.DebuffHex.Speed / 100;
+            Debug.Log(_animatorSpeedAtack);
         }
         else
         {
