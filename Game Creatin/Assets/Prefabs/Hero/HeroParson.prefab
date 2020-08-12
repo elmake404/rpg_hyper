@@ -130,6 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a7b54e4248ea1458fa5335b3d4595b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  material: {fileID: 0}
+  game: {fileID: 7925802283507906158}
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
   _shell: {fileID: 4724351973722247743, guid: 5d7bb05041346234b83c77e5db138013, type: 3}
@@ -189,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d289ac19d188d824781f479ae1822106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetHexagon: {fileID: 0}
+  _animator: {fileID: 0}
   _isMove: 0
   _isClever: 1
   _speed: 0.17
@@ -526,6 +528,12 @@ Transform:
 --- !u!95 &7925802283032830708 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 158381920807472580, guid: 29a90d282ea691b44b8a23ee0dc601a2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8056012482553327408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7925802283507906158 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 158381921548884318, guid: 29a90d282ea691b44b8a23ee0dc601a2,
     type: 3}
   m_PrefabInstance: {fileID: 8056012482553327408}
   m_PrefabAsset: {fileID: 0}

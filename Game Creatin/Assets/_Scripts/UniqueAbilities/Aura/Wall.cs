@@ -5,10 +5,13 @@ using UnityEngine;
 public class Wall : MonoBehaviour
 {
     private HexagonControl _hexagon;
+    private Color _oldColor;
+
     private float _duration, _deceleration;
+
     void Start()
     {
-
+        _oldColor = MapControl.MapNav[0, 0].Sprite.color;
     }
 
     void FixedUpdate()
@@ -16,7 +19,7 @@ public class Wall : MonoBehaviour
         if (_duration<=0)
         {
             _hexagon.DebuffHexEnemy.Speed -= _deceleration;
-            _hexagon.Sprite.color = new Color(1,1,1,1);
+            _hexagon.Sprite.color = _oldColor;
             Destroy(this);
         }
         else

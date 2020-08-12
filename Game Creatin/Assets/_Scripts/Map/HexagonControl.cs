@@ -46,6 +46,11 @@ public class HexagonControl : MonoBehaviour
 
     private void Awake()
     {
+        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        if (mesh!=null)
+        {
+            mesh.enabled = false;
+        }
         position = transform.position;
         layer = gameObject.layer;
 

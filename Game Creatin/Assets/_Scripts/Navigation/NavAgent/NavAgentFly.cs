@@ -7,6 +7,8 @@ public class NavAgentFly : MonoBehaviour, IMove
     private List<HexagonControl> _wayList = new List<HexagonControl>();
     private HexagonControl _targetHexagon;
     private HexagonControl _currentPos;
+    [SerializeField]
+    private Animator _animator;
 
     private bool _isMove;
     private bool _isBypass;
@@ -24,6 +26,18 @@ public class NavAgentFly : MonoBehaviour, IMove
     }
     private void FixedUpdate()
     {
+        if (_animator != null)
+        {
+            if (!_animator.GetBool("Go") && _isMove)
+            {
+                _animator.SetBool("Go", _isMove);
+            }
+            else if (_animator.GetBool("Go") && !_isMove)
+            {
+                _animator.SetBool("Go", _isMove);
+            }
+        }
+
         if (_wayList.Count <= 0)
         {
             _isMove = false;

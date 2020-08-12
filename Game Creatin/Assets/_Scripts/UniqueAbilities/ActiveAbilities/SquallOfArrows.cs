@@ -9,7 +9,7 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
     private HeroControl _heroControl;
     private HexagonControl _hexagonCast;
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
-
+    private Color _oldColor;
 
     [SerializeField]
     private float _cooldown, _damageProcent, _duration, _fireRange;
@@ -18,6 +18,8 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
 
     void Start()
     {
+        _oldColor = MapControl.MapNav[0, 0].Sprite.color;
+
         _isReady = true;
         _fireRange = (1.73f * (_fireRange * 2)) + 0.1f;
         _damage = _heroControl.GetAtackPowePrercent()* _damageProcent;
@@ -57,7 +59,7 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _listHexagonCast.Clear();
 
@@ -83,7 +85,7 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _hexagonCast = null;
 
@@ -136,7 +138,7 @@ public class SquallOfArrows : MonoBehaviour, IActiveAbility
                 _isActivaAbiliti = false;
                 for (int i = 0; i < _listHexagonCast.Count; i++)
                 {
-                    _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                    _listHexagonCast[i].Sprite.color = _oldColor;
                     _listHexagonCast[i].DebuffHexEnemy.Damag -= _damage;
                     _listHexagonCast[i].DebuffHexEnemyFly.Damag -= _damage;
                 }

@@ -11,11 +11,17 @@ public class Murderer : MonoBehaviour, IAbilities
     [SerializeField]
     private float _critPower, _timeForCrit;
     private float _timeForCritConst, _fillAmountTime;
+    [SerializeField]
+    private int _blockСhance;
+
+    private List<bool> _listProtectionOptionsArmor = new List<bool>();
+
     void Start()
     {
         _timeForCritConst = _timeForCrit;
         _timeForCrit = 0;
         _fillAmountTime = Time.fixedDeltaTime / _timeForCritConst;
+        RandomFilling();
     }
     void FixedUpdate()
     {
@@ -32,6 +38,27 @@ public class Murderer : MonoBehaviour, IAbilities
                 _imageAbiliti.fillAmount -= _fillAmountTime;
             }
         }
+    }
+    private void RandomFilling()
+    {
+        int Positiv = 0;
+        for (int i = 0; i < 100; i++)
+        {
+            _listProtectionOptionsArmor.Add(false);
+        }
+
+        List<int> Positivelement = new List<int>();
+
+        while (Positiv < _blockСhance)
+        {
+            int possibility = Random.Range(0, _listProtectionOptionsArmor.Count);
+            if (!Positivelement.Contains(possibility))
+            {
+                _listProtectionOptionsArmor[possibility] = true;
+                Positiv++;
+            }
+        }
+
     }
     public void Atack(float AtackPower, out float Atack, out bool ignoreArmor)
     {
@@ -53,7 +80,15 @@ public class Murderer : MonoBehaviour, IAbilities
     }
     public float Armor(float DamagPower)
     {
-        return DamagPower;
+        int rnd = Random.Range(0, 100);
+        if (_listProtectionOptionsArmor[rnd])
+        {
+            return 0;
+        }
+        else
+        {
+            return DamagPower;
+        }
     }
     public float AtackSpeed(float Speed)
     {

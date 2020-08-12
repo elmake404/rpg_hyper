@@ -80,6 +80,22 @@ MonoBehaviour:
     Speed: 0
     Health: 0
     AtackSpeed: 0
+    Damag: 0
+  DebuffHexEnemy:
+    Speed: 0
+    Health: 0
+    AtackSpeed: 0
+    Damag: 0
+  DebuffHexEnemyFly:
+    Speed: 0
+    Health: 0
+    AtackSpeed: 0
+    Damag: 0
+  DebuffHexHero:
+    Speed: 0
+    Health: 0
+    AtackSpeed: 0
+    Damag: 0
   Sprite: {fileID: 5433359013891936446}
   _flag: {fileID: 977971286727681247, guid: 057f4a2ee177235428f92a64600f78f8, type: 3}
   Data: {fileID: 0}
@@ -92,6 +108,7 @@ MonoBehaviour:
   layer: 0
   IsFree: 1
   IsFreeFly: 1
+  Is: 0
 --- !u!1 &8477872971343664298
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,7 +179,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: f01fbbdb149df9f4caf5dc1d6546c9aa, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

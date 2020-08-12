@@ -8,6 +8,8 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
     private Image _imageAbiliti;
     private HeroControl _heroControl;
     private HexagonControl _hexagonCast;
+    private Color _oldColor;
+
 
     [SerializeField]
     private float  _cooldown,_damagBust;
@@ -15,6 +17,8 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
     private bool _isCast, _isReady;
     void Start()
     {
+        _oldColor = MapControl.MapNav[0, 0].Sprite.color;
+
         _cooldownConst = _cooldown;
         _cooldown = 0;
         _fillAmountTime = Time.fixedDeltaTime / _cooldownConst;
@@ -25,7 +29,6 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
         _width = rectTransform.rect.width / 2;
         _height = rectTransform.rect.height / 2;
     }
-
     void Update()
     {
         {
@@ -48,7 +51,7 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
                     if (hex != null )
                     {
                         if (_hexagonCast != null)
-                            _hexagonCast.GetHexagonMain().Sprite.color = new Color(1, 1, 1, 1);
+                            _hexagonCast.GetHexagonMain().Sprite.color = _oldColor;
 
                         _hexagonCast = hex;
 
@@ -66,7 +69,7 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
                     {
                         if (_hexagonCast != null)
                         {
-                            _hexagonCast.GetHexagonMain().Sprite.color = new Color(1, 1, 1, 1);
+                            _hexagonCast.GetHexagonMain().Sprite.color = _oldColor;
                             _hexagonCast = null;
                         }
                     }
@@ -75,11 +78,11 @@ public class LeapOfFaith : MonoBehaviour, IActiveAbility
                 {
                     if(_hexagonCast!=null)
                     {
-                        _hexagonCast.GetHexagonMain().Sprite.color = new Color(1, 1, 1, 1);
+                        _hexagonCast.GetHexagonMain().Sprite.color = _oldColor;
 
-                        if (_hexagonCast.IsFree || _hexagonCast.TypeHexagon == 1)
+                        if (_hexagonCast.GetHexagonMain().IsFree && _hexagonCast.GetHexagonMain().TypeHexagon != 1)
                         {
-                            int HeroLayer = _hexagonCast.layer == 9 ? 8 : 11;
+                            int HeroLayer = _hexagonCast.GetHexagonMain().layer == 9 ? 8 : 11;
                             Vector2 PosHex = _hexagonCast.GetHexagonMain().position;
                             _heroControl.transform.position =
                                 new Vector3(PosHex.x, PosHex.y, _heroControl.transform.position.z);

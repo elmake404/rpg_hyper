@@ -13,6 +13,7 @@ public class WallOfFire : MonoBehaviour, IActiveAbility
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
     [SerializeField]
     private Color _color;
+    private Color _oldColor;
 
     [SerializeField]
     private float _deceleration, _duration, _cooldown;
@@ -21,6 +22,8 @@ public class WallOfFire : MonoBehaviour, IActiveAbility
 
     void Start()
     {
+        _oldColor = MapControl.MapNav[0, 0].Sprite.color;
+
         _isReady = true;
         _cooldownConst = _cooldown;
         _cooldown = 0;
@@ -51,7 +54,7 @@ public class WallOfFire : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _listHexagonCast.Clear();
 
@@ -102,7 +105,7 @@ public class WallOfFire : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _hexagonCast = null;
 
@@ -120,7 +123,7 @@ public class WallOfFire : MonoBehaviour, IActiveAbility
                 }
                 for (int i = 0; i < _listHexagonCast.Count; i++)
                 {
-                    _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                    _listHexagonCast[i].Sprite.color = _oldColor;
                     Wall wall = _listHexagonCast[i].gameObject.AddComponent<Wall>();
                     wall.Initialization(_listHexagonCast[i], _color, _duration, _deceleration);
                 }

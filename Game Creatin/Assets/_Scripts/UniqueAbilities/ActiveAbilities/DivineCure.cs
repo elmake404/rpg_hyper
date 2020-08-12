@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class DivineCure : MonoBehaviour, IActiveAbility
 {
     private Image _imageAbiliti;
+    private Color _oldColor;
     private HeroControl _heroControl;
     private HexagonControl _hexagonCast;
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
@@ -18,6 +19,7 @@ public class DivineCure : MonoBehaviour, IActiveAbility
 
     void Start()
     {
+        _oldColor = MapControl.MapNav[0, 0].Sprite.color;
         _isReady = true;
         _healRange = (1.73f * (_healRange * 2)) + 0.1f;
 
@@ -56,7 +58,7 @@ public class DivineCure : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _listHexagonCast.Clear();
 
@@ -82,7 +84,7 @@ public class DivineCure : MonoBehaviour, IActiveAbility
                 {
                     for (int i = 0; i < _listHexagonCast.Count; i++)
                     {
-                        _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                        _listHexagonCast[i].Sprite.color = _oldColor;
                     }
                     _hexagonCast = null;
 
@@ -134,7 +136,7 @@ public class DivineCure : MonoBehaviour, IActiveAbility
                 _isActivaAbiliti = false;
                 for (int i = 0; i < _listHexagonCast.Count; i++)
                 {
-                    _listHexagonCast[i].Sprite.color = new Color(1, 1, 1, 1);
+                    _listHexagonCast[i].Sprite.color = _oldColor;
                     _listHexagonCast[i].DebuffHexHero.Health -= _HealProcent;
                 }
             }
