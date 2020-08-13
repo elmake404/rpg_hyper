@@ -132,12 +132,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
+  _individualObj: {fileID: 0}
   _shell: {fileID: 7406334037661084661, guid: 016105798fe27f24888ce179cbccbb19, type: 3}
   _fairPos: {fileID: 0}
+  _listMaterials: []
   _atackPower:
     Max: 25
     Min: 20
-  _healthPoints: 400
+  _healthPoints: 200
   _atackSpeed: 1
   _atackDistens: 9
   _powerRegeneration: 2
