@@ -175,12 +175,15 @@ public class EnemyManager : MonoBehaviour
         for (int i = 0; i < _listHeroGame.Count; i++)
         {
             _listHeroGame[i].StartGame();
-            _listHeroGame[i].ActivationAbilities() ;
+            //тут
+            _listHeroGame[i].ActivationAbilities();
         }
+
         for (int i = 0; i < _listHero.Count; i++)
         {
             if (!_listHeroGame.Contains(_listHero[i]))
             {
+                Debug.Log(1);
                 _listHero[i].Shutdown();
             }
         }

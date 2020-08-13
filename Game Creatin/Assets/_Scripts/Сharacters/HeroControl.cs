@@ -551,7 +551,8 @@ public class HeroControl : MonoBehaviour, IControl
     public void Shutdown()
     {
         _awakePoint.gameObject.SetActive(false);
-        gameObject.SetActive(false);
+
+        //gameObject.SetActive(false);
     }
 
     #region Health
