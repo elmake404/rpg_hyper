@@ -23,6 +23,7 @@ public class HeroControl : MonoBehaviour, IControl
     private Transform _fairPos;
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
+    [SerializeField]
     private List<Material> _listMaterials = new List<Material>();
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();

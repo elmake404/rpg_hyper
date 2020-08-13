@@ -132,18 +132,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
-<<<<<<< HEAD
-  _individualObj: {fileID: 0}
-=======
   _individualObj: {fileID: 8106537405231736906}
->>>>>>> 4b3b13a11a782687558c86baeedc2d691272483b
   _shell: {fileID: 0}
   _fairPos: {fileID: 0}
   _listMaterials: []
   _atackPower:
     Max: 10
     Min: 15
-  _healthPoints: 500
+  _healthPoints: 1000
   _atackSpeed: 0.5
   _atackDistens: 1
   _powerRegeneration: 5

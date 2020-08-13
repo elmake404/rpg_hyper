@@ -50,9 +50,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d1167d4fc7ec14ab31b6cbfb858a07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healthPoints: 100
+  _healthPoints: 150
   _atackSpeed: 1
-  _attackPower: 50
+  _attackPower: 15
   _atackDistens: 1
   _powerRegeneration: 7
   _armor: 5
