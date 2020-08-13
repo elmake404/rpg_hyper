@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Murderer : MonoBehaviour, IAbilities
 {
+    [SerializeField]
+    private GameObject _dodge, _crit;
     private Image _imageAbiliti;
 
     private bool _isCriticalHit;
@@ -60,10 +61,13 @@ public class Murderer : MonoBehaviour, IAbilities
         }
 
     }
-    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor)
+    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor, Vector3 posTarget)
     {
         if (_isCriticalHit)
         {
+            Vector3 vector = new Vector3(0, 1.5f, -4);
+            Instantiate(_crit, posTarget + vector, Quaternion.identity);
+
             ignoreArmor = true;
             _isCriticalHit = false;
             Atack = AtackPower * (_critPower / 100);
@@ -83,6 +87,8 @@ public class Murderer : MonoBehaviour, IAbilities
         int rnd = Random.Range(0, 100);
         if (_listProtectionOptionsArmor[rnd])
         {
+            Vector3 vector = new Vector3(0, 1.5f, -4);
+            Instantiate(_dodge, transform.position + vector, Quaternion.identity);
             return 0;
         }
         else

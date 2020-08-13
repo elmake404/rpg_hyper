@@ -38,7 +38,7 @@ public class FireMage : MonoBehaviour, IAbilities
     {
         return DamagPower;
     }
-    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor)
+    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor, Vector3 posTarget)
     {
         Atack = AtackPower;
         ignoreArmor = false;

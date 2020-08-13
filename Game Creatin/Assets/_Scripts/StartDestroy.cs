@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class StartDestroy : MonoBehaviour
 {
+    [SerializeField]
+    private float _timeLife;
     private void Awake()
     {
-        Destroy(gameObject);
+        Destroy(gameObject,_timeLife);
     }
 }

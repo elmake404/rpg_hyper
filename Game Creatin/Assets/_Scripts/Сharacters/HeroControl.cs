@@ -204,7 +204,8 @@ public class HeroControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         IsAttack = true;
-        _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower), out float AtackPower, out bool IsIgnotArmor);
+        _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower), 
+            out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
 
         if (_isLongRangeAttack)
         {

@@ -209,6 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e03e550375edafb4a9e08db97afa4397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dodge: {fileID: 6718954042140410172, guid: c8bc22b1b4fa4c14c97215451f2a2413, type: 3}
+  _crit: {fileID: 3671489051029848324, guid: f826d37d60bc8074dbeb35b91b86066e, type: 3}
   _critPower: 300
   _timeForCrit: 4.6
   "_block\u0421hance": 25

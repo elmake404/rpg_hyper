@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f942b9b539e16804b981d21fbfc6f960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _crit: {fileID: 3671489051029848324, guid: f826d37d60bc8074dbeb35b91b86066e, type: 3}
   _critPower: 200
   _timeBoost: 4
   _timeForBoost: 7

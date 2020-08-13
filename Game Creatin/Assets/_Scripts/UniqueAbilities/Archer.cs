@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Archer : MonoBehaviour, IAbilities
 {
+    [SerializeField]
+    private GameObject _crit;
+
     private Image _imageAbiliti;
     private List<bool> _listProtectionOptionsCrit = new List<bool>();
 
@@ -69,13 +72,16 @@ public class Archer : MonoBehaviour, IAbilities
             }
         }
     }
-    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor)
+    public void Atack(float AtackPower, out float Atack, out bool ignoreArmor, Vector3 posTarget)
     {
         ignoreArmor = false;
         int rnd = Random.Range(0, 100);
 
         if (_listProtectionOptionsCrit[rnd])
         {
+            Vector3 vector = new Vector3(0, 1.5f, -4);
+            Instantiate(_crit, posTarget + vector, Quaternion.identity);
+
             Atack = AtackPower * (_critPower / 100);
         }
         else

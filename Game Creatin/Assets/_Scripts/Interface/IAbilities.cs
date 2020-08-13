@@ -9,7 +9,7 @@ public interface IAbilities
     void AtackСorrection(IShell shell, EnemyControl enemy, float damag, bool isIgnorArmor);
     void StartAbility();
     void DethAbility();
-    void Atack(float AtackPower, out float Atack, out bool ignoreArmor);
+    void Atack(float AtackPower, out float Atack, out bool ignoreArmor,Vector3 posTarget);
     float Armor(float DamagPower);
     float AtackSpeed(float Speed);
 }
