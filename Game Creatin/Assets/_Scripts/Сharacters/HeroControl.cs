@@ -12,7 +12,7 @@ public class HeroControl : MonoBehaviour, IControl
         public float Min;
     }
 
-    
+
     [SerializeField]
     private CanvasManager _canvasManager;
     [SerializeField]
@@ -23,8 +23,7 @@ public class HeroControl : MonoBehaviour, IControl
     private Transform _fairPos;
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
-    [SerializeField]
-    private List<Material> _listMaterials;
+    private List<Material> _listMaterials = new List<Material>();
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
@@ -61,12 +60,7 @@ public class HeroControl : MonoBehaviour, IControl
 
     private void Awake()
     {
-        //if (game!=null)
-        //{
-        //    material = game.GetComponent<SkinnedMeshRenderer>().material;
-        //        Debug.Log(material);
-
-        //}
+        RecordsMaterials();
         IMoveMain = GetComponent<IMove>();
         _iAbilities = GetComponent<IAbilities>();
 
@@ -137,8 +131,42 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private void RecordsMaterials()
     {
+        List<Transform> bodyParts = new List<Transform>();
+        List<Transform> notOpenParts = new List<Transform>();
         for (int i = 0; i < _individualObj.childCount; i++)
         {
+            if (_individualObj.GetChild(i).childCount > 0)
+            {
+                notOpenParts.Add(_individualObj.GetChild(i));
+            }
+
+            bodyParts.Add(_individualObj.GetChild(i));
+        }
+        while (notOpenParts.Count > 0)
+        {
+            for (int i = 0; i < notOpenParts[0].childCount; i++)
+            {
+                if (notOpenParts[0].GetChild(i).childCount > 0)
+                {
+                    notOpenParts.Add(notOpenParts[0].GetChild(i));
+                }
+
+                bodyParts.Add(notOpenParts[0].GetChild(i));
+            }
+            notOpenParts.Remove(notOpenParts[0]);
+        }
+        for (int i = 0; i < bodyParts.Count; i++)
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
+            MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
+            if (MeshRenderer != null && MeshRenderer.material != null)
+            {
+                _listMaterials.Add(MeshRenderer.material);
+            }
+            if (skinnedMeshRenderer != null && skinnedMeshRenderer.material != null)
+            {
+                _listMaterials.Add(skinnedMeshRenderer.material);
+            }
 
         }
     }
@@ -156,6 +184,21 @@ public class HeroControl : MonoBehaviour, IControl
             }
         }
         return null;
+    }
+    private IEnumerator TakingDamage()
+    {
+        Dictionary<Material, Color> materIalscolor = new Dictionary<Material, Color>();
+        for (int i = 0; i < _listMaterials.Count; i++)
+        {
+            materIalscolor[_listMaterials[i]] = _listMaterials[i].color;
+            _listMaterials[i].color = new Color(0.7264151f, 0.3255162f, 0.3255162f, 1);
+        }
+        yield return new WaitForSeconds(0.2f);
+        for (int i = 0; i < _listMaterials.Count; i++)
+        {
+            _listMaterials[i].color = materIalscolor[_listMaterials[i]];
+        }
+
     }
     private IEnumerator Atack()
     {
@@ -534,7 +577,7 @@ public class HeroControl : MonoBehaviour, IControl
     public void Damage(float atack, bool ignoreArmor)
     {
         float Protection = atack * (_armor + BuffArmor) / 100;
-
+        StartCoroutine(TakingDamage());
         if (!ignoreArmor)
         {
             _healthPoints -= _iAbilities.Armor(atack - Protection);

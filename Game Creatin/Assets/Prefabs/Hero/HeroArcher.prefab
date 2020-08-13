@@ -132,7 +132,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
+<<<<<<< HEAD
   _individualObj: {fileID: 0}
+=======
+  _individualObj: {fileID: 2953420336607414035}
+>>>>>>> 4b3b13a11a782687558c86baeedc2d691272483b
   _shell: {fileID: 1570838261583347939, guid: e119f68850746274bba7c5a80de6cee3, type: 3}
   _fairPos: {fileID: 5394098842759922982}
   _listMaterials: []
