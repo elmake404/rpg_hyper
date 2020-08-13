@@ -135,13 +135,7 @@ MonoBehaviour:
   _individualObj: {fileID: 5357774722920681673}
   _shell: {fileID: 7406334037661084661, guid: 016105798fe27f24888ce179cbccbb19, type: 3}
   _fairPos: {fileID: 6057582194065442684}
-  _listMaterials:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  _listMaterials: []
   _atackPower:
     Max: 25
     Min: 20
