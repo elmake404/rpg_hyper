@@ -9,15 +9,14 @@ public class Shell : MonoBehaviour, IShell
     private float _damag;
     private bool _isIgnotArmor;
 
-    void Start()
-    {
-
-    }
     void FixedUpdate()
     {
-        if (((Vector2)transform.position - _target.HexagonMain().position).magnitude >= 0.01f)
+        if (((Vector2)transform.position - (Vector2)_target.transform.position).magnitude >= 0.2f)
         {
-            transform.position = Vector2.MoveTowards(transform.position, _target.HexagonMain().position, 2);
+            Quaternion rot = Quaternion.LookRotation(_target.transform.position - transform.position);
+            rot.eulerAngles = new Vector3(0, 0, -rot.eulerAngles.x);
+            transform.rotation = rot;
+            transform.position = Vector2.MoveTowards(transform.position, _target.transform.position, 2);
         }
         else
         {

@@ -24,13 +24,14 @@ public class HeroControl : MonoBehaviour, IControl
     private EnemyManager _enemyManager;
     private HexagonControl _hexagonMain;
     [SerializeField]
-    private List<Material> _listMaterials = new List<Material>();
+    private List<MaterialReplacement> _listMaterialReplacements = new List<MaterialReplacement>();
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
     private Color _oldColor;
 
     private IAbilities _iAbilities;
+    private IEnumerator _corotineTaking;
 
     [SerializeField]
     private MaxMin _atackPower;
@@ -61,9 +62,9 @@ public class HeroControl : MonoBehaviour, IControl
 
     private void Awake()
     {
-        RecordsMaterials();
         IMoveMain = GetComponent<IMove>();
         _iAbilities = GetComponent<IAbilities>();
+        _corotineTaking = TakingDamage();
 
         transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
@@ -130,6 +131,7 @@ public class HeroControl : MonoBehaviour, IControl
             }
         }
     }
+    [ContextMenu("Records Materials")]
     private void RecordsMaterials()
     {
         List<Transform> bodyParts = new List<Transform>();
@@ -158,16 +160,24 @@ public class HeroControl : MonoBehaviour, IControl
         }
         for (int i = 0; i < bodyParts.Count; i++)
         {
-            SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
-            MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
-            if (MeshRenderer != null && MeshRenderer.material != null)
+            MaterialReplacement materialRep = bodyParts[i].GetComponent<MaterialReplacement>();
+            if (materialRep != null)
             {
-                _listMaterials.Add(MeshRenderer.material);
+                _listMaterialReplacements.Add(materialRep);
             }
-            if (skinnedMeshRenderer != null && skinnedMeshRenderer.material != null)
-            {
-                _listMaterials.Add(skinnedMeshRenderer.material);
-            }
+
+            //SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
+            //MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
+            //if (MeshRenderer != null )
+            //{
+            //    _listMeshRenderers.Add(MeshRenderer);
+            //    _listMaterialReplacements.Add(bodyParts[i].GetComponent<MaterialReplacement>());
+            //}
+            //if (skinnedMeshRenderer != null)
+            //{
+            //    _listSkinnedMeshRenderers.Add(skinnedMeshRenderer);
+            //    _listMaterialReplacements.Add(bodyParts[i].GetComponent<MaterialReplacement>());
+            //}
 
         }
     }
@@ -188,23 +198,21 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private IEnumerator TakingDamage()
     {
-        Dictionary<Material, Color> materIalscolor = new Dictionary<Material, Color>();
-        for (int i = 0; i < _listMaterials.Count; i++)
+        for (int i = 0; i < _listMaterialReplacements.Count; i++)
         {
-            materIalscolor[_listMaterials[i]] = _listMaterials[i].color;
-            _listMaterials[i].color = new Color(0.7264151f, 0.3255162f, 0.3255162f, 1);
+            _listMaterialReplacements[i].NewMaterial();
         }
         yield return new WaitForSeconds(0.2f);
-        for (int i = 0; i < _listMaterials.Count; i++)
+        for (int i = 0; i < _listMaterialReplacements.Count; i++)
         {
-            _listMaterials[i].color = materIalscolor[_listMaterials[i]];
+            _listMaterialReplacements[i].OldMaterial();
         }
 
     }
     private IEnumerator Atack()
     {
         IsAttack = true;
-        _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower), 
+        _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower),
             out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
 
         if (_isLongRangeAttack)
@@ -552,7 +560,7 @@ public class HeroControl : MonoBehaviour, IControl
     {
         _awakePoint.gameObject.SetActive(false);
 
-        //gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     #region Health
@@ -578,9 +586,14 @@ public class HeroControl : MonoBehaviour, IControl
         return _healthPoints;
     }
     public void Damage(float atack, bool ignoreArmor)
+
     {
         float Protection = atack * (_armor + BuffArmor) / 100;
-        StartCoroutine(TakingDamage());
+        StopCoroutine(_corotineTaking);
+
+        _corotineTaking = TakingDamage();
+
+        StartCoroutine(_corotineTaking);
         if (!ignoreArmor)
         {
             _healthPoints -= _iAbilities.Armor(atack - Protection);

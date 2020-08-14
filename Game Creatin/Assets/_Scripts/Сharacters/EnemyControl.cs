@@ -13,6 +13,8 @@ public class EnemyControl : MonoBehaviour, IControl
     private float _animatorSpeedAtack, _animatorSpeedGo;
 
     [SerializeField]
+    private Transform _individualObj;
+    [SerializeField]
     private Animator _animator;
     [SerializeField]
     private AnimationClip _go, _atack;
@@ -22,6 +24,10 @@ public class EnemyControl : MonoBehaviour, IControl
     public HeroControl HeroTarget;
     [HideInInspector]
     public List<HeroControl> Pursuer = new List<HeroControl>();
+    [SerializeField]
+    private List<MaterialReplacement> _listMaterialReplacements = new List<MaterialReplacement>();
+
+    private IEnumerator _corotineTaking;
 
     [HideInInspector]
     public bool IsAttack;
@@ -31,6 +37,7 @@ public class EnemyControl : MonoBehaviour, IControl
 
     private void Awake()
     {
+        _corotineTaking = TakingDamage();
         _animatorSpeedGo = 1;
         _animatorSpeedAtack = 1;
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
@@ -90,7 +97,7 @@ public class EnemyControl : MonoBehaviour, IControl
 
         }
 
-        Damage(_damagEnvironment, false);
+        PeriodicDamage(_damagEnvironment, false);
 
         if (_healthPoints < _healthPointsConst)
         {
@@ -158,17 +165,35 @@ public class EnemyControl : MonoBehaviour, IControl
             }
         }
     }
+    private IEnumerator TakingDamage()
+    {
+        for (int i = 0; i < _listMaterialReplacements.Count; i++)
+        {
+            _listMaterialReplacements[i].NewMaterial();
+        }
+        yield return new WaitForSeconds(0.2f);
+        for (int i = 0; i < _listMaterialReplacements.Count; i++)
+        {
+            _listMaterialReplacements[i].OldMaterial();
+        }
+
+    }
     private IEnumerator Atack()
     {
         IsAttack = true;
+        float pause = (_atack.length + ((_atack.length / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
+
+        IMoveMain.StopSpeedAtack(pause);
 
         _animator.SetBool("Atack", true);
         yield return new WaitForSeconds(0.02f);
         _animator.SetBool("Atack", false);
-        yield return new WaitForSeconds(_atack.length+((_atack.length/100)*((_animatorSpeedAtack*(-100))/2)));
-
+        yield return new WaitForSeconds(pause/2);
+        if(HeroTarget!=null)
         HeroTarget.Damage(_attackPower, false);
-        IMoveMain.StopSpeedAtack(((_atack.length / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
+
+        yield return new WaitForSeconds(pause / 2);
+
 
         yield return new WaitForSeconds(_atackSpeed / 2 + _debuffAtackSpeed);
         IsAttack = false;
@@ -445,9 +470,28 @@ public class EnemyControl : MonoBehaviour, IControl
     {
         Pursuer.Remove(hero);
     }
+    public void PeriodicDamage(float atack, bool ignoreArmor)
+    {
+        float Protection = atack * _armor / 100f;
+        if (!ignoreArmor)
+        {
+            _healthPoints -= (atack - Protection);
+        }
+        else
+        {
+
+            _healthPoints -= atack;
+        }
+    }
     public void Damage(float atack, bool ignoreArmor)
     {
         float Protection = atack * _armor / 100f;
+
+        StopCoroutine(_corotineTaking);
+
+        _corotineTaking = TakingDamage();
+
+        StartCoroutine(_corotineTaking);
 
         if (!ignoreArmor)
         {
@@ -455,8 +499,8 @@ public class EnemyControl : MonoBehaviour, IControl
         }
         else
         {
-            _healthPoints -= atack;
 
+            _healthPoints -= atack;
         }
     }
     #region Interface

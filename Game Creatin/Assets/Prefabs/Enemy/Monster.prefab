@@ -56,12 +56,15 @@ MonoBehaviour:
   _atackDistens: 1
   _powerRegeneration: 7
   _armor: 5
+  _individualObj: {fileID: 0}
   _animator: {fileID: 2754785981116019865}
   _go: {fileID: 7400000, guid: 203ba7013bdc7e44c8c41bffb6cbde87, type: 3}
   _atack: {fileID: 7400000, guid: 62783596cf9b39a49b77b38c2d8bd621, type: 3}
   AnApproac: []
   HeroTarget: {fileID: 0}
   Pursuer: []
+  _listMaterialReplacements:
+  - {fileID: 8552838675369900363}
   IsAttack: 0
 --- !u!50 &7993630380409840971
 Rigidbody2D:
@@ -133,6 +136,22 @@ MonoBehaviour:
   _speed: 0.1
   _speedMove: 0
   _debuffSpeed: 0
+--- !u!114 &8552838675369900363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2754785981108586311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5eef94dbac668342960a593e28eca42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentMaterial: {fileID: 2100000, guid: 3f3d66ca8fb2e114ab9ffb041f4d5902, type: 2}
+  _newMaterial: {fileID: 2100000, guid: 1646d2089c32f3d4f8a3e6fd58f04536, type: 2}
+  _skinnedMeshRenderer: {fileID: 2754785981120154201}
+  _meshRenderer: {fileID: 0}
 --- !u!1 &5252100088159651508
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,6 +309,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bloom
       objectReference: {fileID: 0}
+    - target: {fileID: 2708408022896900816, guid: 4b8b9f344b09b0041a3893afc508ed95,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b8b9f344b09b0041a3893afc508ed95, type: 3}
 --- !u!4 &2754785981108558713 stripped
@@ -301,6 +325,18 @@ Transform:
 --- !u!95 &2754785981116019865 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 2708408022901163024, guid: 4b8b9f344b09b0041a3893afc508ed95,
+    type: 3}
+  m_PrefabInstance: {fileID: 264804173415116937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2754785981108586311 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2708408022891689934, guid: 4b8b9f344b09b0041a3893afc508ed95,
+    type: 3}
+  m_PrefabInstance: {fileID: 264804173415116937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &2754785981120154201 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2708408022896900816, guid: 4b8b9f344b09b0041a3893afc508ed95,
     type: 3}
   m_PrefabInstance: {fileID: 264804173415116937}
   m_PrefabAsset: {fileID: 0}
