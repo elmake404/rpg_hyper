@@ -51,9 +51,9 @@ public class Parson : MonoBehaviour, IAbilities
         Atack = AtackPower;
         ignoreArmor = false;
     }
-    public float AtackSpeed(float Speed)
+    public float AtackSpeed()
     {
-        return Speed;
+        return 1;
     }
     public void StartAbility()
     {

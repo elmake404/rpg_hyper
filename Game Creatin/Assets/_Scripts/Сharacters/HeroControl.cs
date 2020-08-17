@@ -17,6 +17,12 @@ public class HeroControl : MonoBehaviour, IControl
     private CanvasManager _canvasManager;
     [SerializeField]
     private Transform _awakePoint, _individualObj;
+
+    [SerializeField]
+    private AnimationClip _atack;
+    [SerializeField]
+    private Animator Animator;
+
     [SerializeField]
     private GameObject _shell;
     [SerializeField]
@@ -42,6 +48,7 @@ public class HeroControl : MonoBehaviour, IControl
     private bool _isLongRangeAttack;
     [SerializeField]
     private int _namberTegAbiliti, _priorityAgr;
+    private float _animatorSpeedAtack,_abilitiSpeedAtack;
 
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -50,21 +57,24 @@ public class HeroControl : MonoBehaviour, IControl
     public EnemyControl EnemyTarget;
     [HideInInspector]
     public bool IsAttack, IsStopAtack;
-    public Animator Animator;
+
 
     [HideInInspector]
     public List<HexagonControl> AnApproac = new List<HexagonControl>();
     [HideInInspector]
     public List<EnemyControl> Pursuer = new List<EnemyControl>();
 
-    [SerializeField]
+    [HideInInspector]
     public float BuffHealth, BuffAtackSpeed, BuffArmor, BuffAtackPower;
 
     private void Awake()
     {
+        _abilitiSpeedAtack = 1;
+
         IMoveMain = GetComponent<IMove>();
         _iAbilities = GetComponent<IAbilities>();
         _corotineTaking = TakingDamage();
+        _animatorSpeedAtack = 1;
 
         transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
@@ -104,6 +114,30 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private void FixedUpdate()
     {
+        if (Animator.GetNextAnimatorClipInfo(0).Length != 0)
+        {
+            if (Animator.GetNextAnimatorClipInfo(0)[0].clip == _atack)
+            {
+                Animator.speed = (1 + _animatorSpeedAtack)* _abilitiSpeedAtack;
+            }
+            else
+            {
+                Animator.speed = 1;
+            }
+        }
+        else
+        {
+             if (Animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atack)
+            {
+                Animator.speed = (1 + _animatorSpeedAtack) * _abilitiSpeedAtack;
+            }
+            else
+            {
+                Animator.speed = 1;
+            }
+
+        }
+
         _healthPoints += BuffHealth;
 
         if (_healthPoints < _healthPointsConst)
@@ -165,20 +199,6 @@ public class HeroControl : MonoBehaviour, IControl
             {
                 _listMaterialReplacements.Add(materialRep);
             }
-
-            //SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
-            //MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
-            //if (MeshRenderer != null )
-            //{
-            //    _listMeshRenderers.Add(MeshRenderer);
-            //    _listMaterialReplacements.Add(bodyParts[i].GetComponent<MaterialReplacement>());
-            //}
-            //if (skinnedMeshRenderer != null)
-            //{
-            //    _listSkinnedMeshRenderers.Add(skinnedMeshRenderer);
-            //    _listMaterialReplacements.Add(bodyParts[i].GetComponent<MaterialReplacement>());
-            //}
-
         }
     }
     private EnemyControl EnemyChoice()
@@ -211,9 +231,16 @@ public class HeroControl : MonoBehaviour, IControl
     }
     private IEnumerator Atack()
     {
+        _abilitiSpeedAtack = _iAbilities.AtackSpeed();
         IsAttack = true;
+        float pause = (_atack.length + ((_atack.length / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
+        pause /= _abilitiSpeedAtack;
+        Animator.SetBool("Atack", true);
+        yield return new WaitForSeconds(0.02f);
+        Animator.SetBool("Atack", false);
+        yield return new WaitForSeconds(pause / 2);
         _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower),
-            out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
+    out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
 
         if (_isLongRangeAttack)
         {
@@ -227,9 +254,32 @@ public class HeroControl : MonoBehaviour, IControl
             EnemyTarget.Damage(AtackPower, IsIgnotArmor);
         }
 
-        //IMoveMain.StopSpeedAtack(0.5f);
-        yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + BuffAtackSpeed));
+        yield return new WaitForSeconds(pause / 2);
+
+        float PouseOnatack = (_atackSpeed + BuffAtackSpeed) / _abilitiSpeedAtack;
+        yield return new WaitForSeconds(PouseOnatack);
         IsAttack = false;
+
+
+        //IsAttack = true;
+        //_iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower),
+        //    out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
+
+        //if (_isLongRangeAttack)
+        //{
+        //    Quaternion rot = Quaternion.LookRotation(EnemyTarget.transform.position - _fairPos.position);
+        //    rot.eulerAngles = new Vector3(0, 0, -rot.eulerAngles.x);
+        //    IShell shell = Instantiate(_shell, _fairPos.position, rot).GetComponent<IShell>();
+        //    _iAbilities.AtackСorrection(shell, EnemyTarget, AtackPower, IsIgnotArmor);
+        //}
+        //else
+        //{
+        //    EnemyTarget.Damage(AtackPower, IsIgnotArmor);
+        //}
+
+        ////IMoveMain.StopSpeedAtack(0.5f);
+        //yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + BuffAtackSpeed));
+        //IsAttack = false;
     }
     private void RecordApproac()
     {
@@ -589,11 +639,11 @@ public class HeroControl : MonoBehaviour, IControl
 
     {
         float Protection = atack * (_armor + BuffArmor) / 100;
-        StopCoroutine(_corotineTaking);
+        //StopCoroutine(_corotineTaking);
 
-        _corotineTaking = TakingDamage();
+        //_corotineTaking = TakingDamage();
 
-        StartCoroutine(_corotineTaking);
+        //StartCoroutine(_corotineTaking);
         if (!ignoreArmor)
         {
             _healthPoints -= _iAbilities.Armor(atack - Protection);
@@ -620,12 +670,13 @@ public class HeroControl : MonoBehaviour, IControl
         BuffHealth = ((_healthPointsConst / 100) * hex.DebuffHexHero.Health) / 60;
         BuffAtackSpeed = (_atackSpeed / 100) * hex.DebuffHexHero.AtackSpeed;
         float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexHero.Speed;
+        _animatorSpeedAtack = hex.DebuffHexHero.AtackSpeed / 100;
 
         hex = MapControl.FieldPosition(gameObject.layer, NextPos);
         BuffHealth += ((_healthPointsConst / 100) * hex.DebuffHex.Health) / 60;
         BuffAtackSpeed += (_atackSpeed / 100) * hex.DebuffHex.AtackSpeed;
         IMoveMain.DebuffSpeed(DeSpeed + ((IMoveMain.GetSpeed() / 100) * hex.DebuffHex.Speed));
-
+        _animatorSpeedAtack += hex.DebuffHex.AtackSpeed / 100;
     }
     public HexagonControl HexagonMain()
     {

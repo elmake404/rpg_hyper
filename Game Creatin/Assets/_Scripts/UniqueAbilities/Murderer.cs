@@ -96,9 +96,9 @@ public class Murderer : MonoBehaviour, IAbilities
             return DamagPower;
         }
     }
-    public float AtackSpeed(float Speed)
+    public float AtackSpeed()
     {
-        return Speed;
+        return 1;
     }
     public void StartAbility()
     {

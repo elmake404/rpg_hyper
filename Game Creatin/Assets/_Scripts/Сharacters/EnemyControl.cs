@@ -188,14 +188,14 @@ public class EnemyControl : MonoBehaviour, IControl
         _animator.SetBool("Atack", true);
         yield return new WaitForSeconds(0.02f);
         _animator.SetBool("Atack", false);
-        yield return new WaitForSeconds(pause/2);
-        if(HeroTarget!=null)
-        HeroTarget.Damage(_attackPower, false);
+        yield return new WaitForSeconds(pause / 2);
+        if (HeroTarget != null)
+            HeroTarget.Damage(_attackPower, false);
 
         yield return new WaitForSeconds(pause / 2);
 
 
-        yield return new WaitForSeconds(_atackSpeed / 2 + _debuffAtackSpeed);
+        yield return new WaitForSeconds(_atackSpeed + _debuffAtackSpeed / 2);
         IsAttack = false;
     }
     private void RecordApproac()
@@ -522,7 +522,7 @@ public class EnemyControl : MonoBehaviour, IControl
             hex = MapControl.FieldPosition(gameObject.layer, NextPos);
 
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemy.Health) / 50f;
-            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemy.AtackSpeed/2);
+            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemy.AtackSpeed / 2);
             _damagEnvironment = hex.DebuffHexEnemy.Damag / 50f;
             float DeSpeed = (IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemy.Speed;
             _animatorSpeedAtack = hex.DebuffHexEnemy.AtackSpeed / 100;
@@ -541,8 +541,10 @@ public class EnemyControl : MonoBehaviour, IControl
             hex = MapControl.FieldPositionFly(gameObject.layer, NextPos);
             _debuffHealth = ((_healthPointsConst / 100f) * hex.DebuffHexEnemyFly.Health) / 50f;
             _damagEnvironment = hex.DebuffHexEnemyFly.Damag / 50f;
-            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemyFly.AtackSpeed/2);
+            _debuffAtackSpeed = (_atackSpeed / 100f) * (hex.DebuffHexEnemyFly.AtackSpeed / 2);
             IMoveMain.DebuffSpeed((IMoveMain.GetSpeed() / 100f) * hex.DebuffHexEnemyFly.Speed);
+            _animatorSpeedAtack = hex.DebuffHexEnemyFly.AtackSpeed / 100;
+            _animatorSpeedGo = hex.DebuffHexEnemyFly.Speed / 100;
         }
     }
     public HexagonControl HexagonMain()

@@ -132,7 +132,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
-  _individualObj: {fileID: 0}
+  _individualObj: {fileID: 4884072968821893352}
+  _atack: {fileID: -203655887218126122, guid: da3ae7dbe85f2ff49bbe328c20cd3f6b, type: 3}
+  Animator: {fileID: 1991479376094673653}
   _shell: {fileID: 0}
   _fairPos: {fileID: 0}
   _listMaterialReplacements:
@@ -146,7 +148,7 @@ MonoBehaviour:
     Max: 15
     Min: 10
   _healthPoints: 600
-  _atackSpeed: 0.33
+  _atackSpeed: 0.05
   _atackDistens: 1
   _powerRegeneration: 4
   _agrDistens: 1
@@ -157,7 +159,6 @@ MonoBehaviour:
   EnemyTarget: {fileID: 0}
   IsAttack: 0
   IsStopAtack: 0
-  Animator: {fileID: 0}
   AnApproac: []
   Pursuer: []
   BuffHealth: 0
@@ -711,6 +712,12 @@ PrefabInstance:
 --- !u!4 &4884072968821893352 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3096533000607648445, guid: 6d3193fc7015b0747ba1887f96d29c19,
+    type: 3}
+  m_PrefabInstance: {fileID: 7583690306605359701}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1991479376094673653 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8258908851104553120, guid: 6d3193fc7015b0747ba1887f96d29c19,
     type: 3}
   m_PrefabInstance: {fileID: 7583690306605359701}
   m_PrefabAsset: {fileID: 0}

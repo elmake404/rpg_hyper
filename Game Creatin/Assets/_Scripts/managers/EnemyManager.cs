@@ -183,7 +183,6 @@ public class EnemyManager : MonoBehaviour
         {
             if (!_listHeroGame.Contains(_listHero[i]))
             {
-                Debug.Log(1);
                 _listHero[i].Shutdown();
             }
         }

@@ -11,5 +11,5 @@ public interface IAbilities
     void DethAbility();
     void Atack(float AtackPower, out float Atack, out bool ignoreArmor,Vector3 posTarget);
     float Armor(float DamagPower);
-    float AtackSpeed(float Speed);
+    float AtackSpeed();
 }

@@ -93,7 +93,7 @@ public class Archer : MonoBehaviour, IAbilities
     {
         return DamagPower;
     }
-    public float AtackSpeed(float Speed)
+    public float AtackSpeed()
     {
         if (_boostSpeed)
         {
@@ -105,11 +105,11 @@ public class Archer : MonoBehaviour, IAbilities
 
         if (_activationBoost)
         {
-            return Speed / _attackAcceleration;
+            return  _attackAcceleration;
         }
         else
         {
-            return Speed;
+            return 1;
         }
     }
     public void StartAbility()
