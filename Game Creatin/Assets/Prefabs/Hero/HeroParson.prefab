@@ -133,7 +133,9 @@ MonoBehaviour:
   _canvasManager: {fileID: 0}
   _awakePoint: {fileID: 0}
   _individualObj: {fileID: 7925802283507411532}
-  _atack: {fileID: -203655887218126122, guid: f578312d60508554eba97f03e4bdcc59, type: 3}
+  _atackAnimation:
+    Atack: {fileID: -203655887218126122, guid: f578312d60508554eba97f03e4bdcc59, type: 3}
+    Speed: 2
   Animator: {fileID: 7925802283032830708}
   _shell: {fileID: 4724351973722247743, guid: 5d7bb05041346234b83c77e5db138013, type: 3}
   _fairPos: {fileID: 2205987146717977591}

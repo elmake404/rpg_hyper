@@ -11,6 +11,12 @@ public class HeroControl : MonoBehaviour, IControl
         public float Max;
         public float Min;
     }
+    [System.Serializable]
+    private struct AnimationCharacteristics
+    {
+        public AnimationClip Atack;
+        public float Speed;
+    }
 
 
     [SerializeField]
@@ -19,7 +25,7 @@ public class HeroControl : MonoBehaviour, IControl
     private Transform _awakePoint, _individualObj;
 
     [SerializeField]
-    private AnimationClip _atack;
+    private AnimationCharacteristics _atackAnimation;
     [SerializeField]
     private Animator Animator;
 
@@ -34,6 +40,7 @@ public class HeroControl : MonoBehaviour, IControl
     private List<HexagonControl> _ListHexAgr = new List<HexagonControl>();
     private List<HexagonControl> _ListHexAtack = new List<HexagonControl>();
     private List<HexagonControl> _listHexagonCast = new List<HexagonControl>();
+    //public List<Transform> list = new List<Transform>();
     private Color _oldColor;
 
     private IAbilities _iAbilities;
@@ -42,7 +49,8 @@ public class HeroControl : MonoBehaviour, IControl
     [SerializeField]
     private MaxMin _atackPower;
     [SerializeField]
-    private float _healthPoints, _atackSpeed, _atackDistens, _powerRegeneration, _agrDistens, _armor;
+    private float  _healthPoints, _atackSpeed, _atackDistens, 
+        _powerRegeneration, _agrDistens, _armor;
     private float _atackDistensConst, _healthPointsConst, _regeneration, _agrDistensConst;
     [SerializeField]
     private bool _isLongRangeAttack;
@@ -81,7 +89,6 @@ public class HeroControl : MonoBehaviour, IControl
         _agrDistensConst = (1.73f * (_agrDistens * 2)) + 0.1f;
         _healthPointsConst = _healthPoints;
         _regeneration = _powerRegeneration / 60;
-        //_navigationHero.Control = this;
 
         IControlMain = this;
     }
@@ -116,7 +123,7 @@ public class HeroControl : MonoBehaviour, IControl
     {
         if (Animator.GetNextAnimatorClipInfo(0).Length != 0)
         {
-            if (Animator.GetNextAnimatorClipInfo(0)[0].clip == _atack)
+            if (Animator.GetNextAnimatorClipInfo(0)[0].clip == _atackAnimation.Atack)
             {
                 Animator.speed = (1 + _animatorSpeedAtack)* _abilitiSpeedAtack;
             }
@@ -127,7 +134,7 @@ public class HeroControl : MonoBehaviour, IControl
         }
         else
         {
-             if (Animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atack)
+             if (Animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atackAnimation.Atack)
             {
                 Animator.speed = (1 + _animatorSpeedAtack) * _abilitiSpeedAtack;
             }
@@ -194,12 +201,24 @@ public class HeroControl : MonoBehaviour, IControl
         }
         for (int i = 0; i < bodyParts.Count; i++)
         {
+            //SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
+            //MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
+            //if (MeshRenderer != null)
+            //{
+            //    list.Add(bodyParts[i]);
+            //}
+            //if (skinnedMeshRenderer != null)
+            //{
+            //    list.Add(bodyParts[i]);
+            //}
+
             MaterialReplacement materialRep = bodyParts[i].GetComponent<MaterialReplacement>();
             if (materialRep != null)
             {
                 _listMaterialReplacements.Add(materialRep);
             }
         }
+
     }
     private EnemyControl EnemyChoice()
     {
@@ -232,15 +251,22 @@ public class HeroControl : MonoBehaviour, IControl
     private IEnumerator Atack()
     {
         _abilitiSpeedAtack = _iAbilities.AtackSpeed();
+
         IsAttack = true;
-        float pause = (_atack.length + ((_atack.length / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
+
+        float SpeedAnimation = _atackAnimation.Atack.length / _atackAnimation.Speed;
+        float pause = (SpeedAnimation + ((SpeedAnimation / 100) * ((_animatorSpeedAtack * (-100)) / 2)));
+
         pause /= _abilitiSpeedAtack;
+
         Animator.SetBool("Atack", true);
         yield return new WaitForSeconds(0.02f);
         Animator.SetBool("Atack", false);
+
         yield return new WaitForSeconds(pause / 2);
+
         _iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower),
-    out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
+         out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
 
         if (_isLongRangeAttack)
         {
@@ -257,29 +283,10 @@ public class HeroControl : MonoBehaviour, IControl
         yield return new WaitForSeconds(pause / 2);
 
         float PouseOnatack = (_atackSpeed + BuffAtackSpeed) / _abilitiSpeedAtack;
-        yield return new WaitForSeconds(PouseOnatack);
+
+        yield return new WaitForSeconds(PouseOnatack+0.04f);
+
         IsAttack = false;
-
-
-        //IsAttack = true;
-        //_iAbilities.Atack(Random.Range(_atackPower.Min + BuffAtackPower, _atackPower.Max + BuffAtackPower),
-        //    out float AtackPower, out bool IsIgnotArmor, EnemyTarget.transform.position);
-
-        //if (_isLongRangeAttack)
-        //{
-        //    Quaternion rot = Quaternion.LookRotation(EnemyTarget.transform.position - _fairPos.position);
-        //    rot.eulerAngles = new Vector3(0, 0, -rot.eulerAngles.x);
-        //    IShell shell = Instantiate(_shell, _fairPos.position, rot).GetComponent<IShell>();
-        //    _iAbilities.AtackСorrection(shell, EnemyTarget, AtackPower, IsIgnotArmor);
-        //}
-        //else
-        //{
-        //    EnemyTarget.Damage(AtackPower, IsIgnotArmor);
-        //}
-
-        ////IMoveMain.StopSpeedAtack(0.5f);
-        //yield return new WaitForSeconds(_iAbilities.AtackSpeed(_atackSpeed + BuffAtackSpeed));
-        //IsAttack = false;
     }
     private void RecordApproac()
     {
