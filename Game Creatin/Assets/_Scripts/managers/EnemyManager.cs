@@ -187,6 +187,14 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < MapControl.MapNav.GetLength(0); i++)
+        {
+            for (int j = 0; j < MapControl.MapNav.GetLength(1); j++)
+            {
+                MapControl.MapNav[i, j].Sprite.color = Vector4.zero;
+                MapControl.MapNav[i, j].GetHexagonMain().Sprite.color = Vector4.zero;
+            }
+        }
         StartCoroutine(Production());
     }
     public void GoalSelection(EnemyControl enemy, string name)

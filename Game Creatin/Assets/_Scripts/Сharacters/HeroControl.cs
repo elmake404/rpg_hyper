@@ -49,14 +49,14 @@ public class HeroControl : MonoBehaviour, IControl
     [SerializeField]
     private MaxMin _atackPower;
     [SerializeField]
-    private float  _healthPoints, _atackSpeed, _atackDistens, 
+    private float _healthPoints, _atackSpeed, _atackDistens,
         _powerRegeneration, _agrDistens, _armor;
     private float _atackDistensConst, _healthPointsConst, _regeneration, _agrDistensConst;
     [SerializeField]
     private bool _isLongRangeAttack;
     [SerializeField]
     private int _namberTegAbiliti, _priorityAgr;
-    private float _animatorSpeedAtack,_abilitiSpeedAtack;
+    private float _animatorSpeedAtack, _abilitiSpeedAtack;
 
     public IMove IMoveMain;
     public IControl IControlMain;
@@ -78,15 +78,19 @@ public class HeroControl : MonoBehaviour, IControl
     private void Awake()
     {
         _abilitiSpeedAtack = 1;
+        _animatorSpeedAtack = 1;
 
         IMoveMain = GetComponent<IMove>();
         _iAbilities = GetComponent<IAbilities>();
+
         _corotineTaking = TakingDamage();
-        _animatorSpeedAtack = 1;
+
 
         transform.position = new Vector3(_awakePoint.position.x, _awakePoint.position.y, transform.position.z);
+
         _atackDistensConst = (1.73f * (_atackDistens * 2)) + 0.1f;
         _agrDistensConst = (1.73f * (_agrDistens * 2)) + 0.1f;
+
         _healthPointsConst = _healthPoints;
         _regeneration = _powerRegeneration / 60;
 
@@ -125,7 +129,7 @@ public class HeroControl : MonoBehaviour, IControl
         {
             if (Animator.GetNextAnimatorClipInfo(0)[0].clip == _atackAnimation.Atack)
             {
-                Animator.speed = (1 + _animatorSpeedAtack)* _abilitiSpeedAtack;
+                Animator.speed = (1 + _animatorSpeedAtack) * _abilitiSpeedAtack;
             }
             else
             {
@@ -134,7 +138,7 @@ public class HeroControl : MonoBehaviour, IControl
         }
         else
         {
-             if (Animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atackAnimation.Atack)
+            if (Animator.GetCurrentAnimatorClipInfo(0)[0].clip == _atackAnimation.Atack)
             {
                 Animator.speed = (1 + _animatorSpeedAtack) * _abilitiSpeedAtack;
             }
@@ -201,6 +205,7 @@ public class HeroControl : MonoBehaviour, IControl
         }
         for (int i = 0; i < bodyParts.Count; i++)
         {
+            #region SearchMesh
             //SkinnedMeshRenderer skinnedMeshRenderer = bodyParts[i].GetComponent<SkinnedMeshRenderer>();
             //MeshRenderer MeshRenderer = bodyParts[i].GetComponent<MeshRenderer>();
             //if (MeshRenderer != null)
@@ -211,6 +216,7 @@ public class HeroControl : MonoBehaviour, IControl
             //{
             //    list.Add(bodyParts[i]);
             //}
+            #endregion
 
             MaterialReplacement materialRep = bodyParts[i].GetComponent<MaterialReplacement>();
             if (materialRep != null)
@@ -284,7 +290,7 @@ public class HeroControl : MonoBehaviour, IControl
 
         float PouseOnatack = (_atackSpeed + BuffAtackSpeed) / _abilitiSpeedAtack;
 
-        yield return new WaitForSeconds(PouseOnatack+0.04f);
+        yield return new WaitForSeconds(PouseOnatack + 0.04f);
 
         IsAttack = false;
     }
@@ -518,6 +524,11 @@ public class HeroControl : MonoBehaviour, IControl
 
         RecordApproac();
 
+        Vector3 Pos = _individualObj.position;
+        Pos.z = -0.5f * _hexagonMain.Row;
+        Debug.Log(Pos);
+        _individualObj.position = Pos;
+
         CollisionDebuff(transform.position);
     }
     public void Marker(Vector2 pos)
@@ -646,11 +657,11 @@ public class HeroControl : MonoBehaviour, IControl
 
     {
         float Protection = atack * (_armor + BuffArmor) / 100;
-        //StopCoroutine(_corotineTaking);
+        StopCoroutine(_corotineTaking);
 
-        //_corotineTaking = TakingDamage();
+        _corotineTaking = TakingDamage();
 
-        //StartCoroutine(_corotineTaking);
+        StartCoroutine(_corotineTaking);
         if (!ignoreArmor)
         {
             _healthPoints -= _iAbilities.Armor(atack - Protection);

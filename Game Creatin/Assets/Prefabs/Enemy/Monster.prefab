@@ -56,7 +56,7 @@ MonoBehaviour:
   _atackDistens: 1
   _powerRegeneration: 7
   _armor: 5
-  _individualObj: {fileID: 0}
+  _individualObj: {fileID: 2754785981108558713}
   _animator: {fileID: 2754785981116019865}
   _go: {fileID: 7400000, guid: 203ba7013bdc7e44c8c41bffb6cbde87, type: 3}
   _atack: {fileID: 7400000, guid: 62783596cf9b39a49b77b38c2d8bd621, type: 3}
@@ -365,7 +365,7 @@ PrefabInstance:
     - target: {fileID: 7252491003725926521, guid: 9d91629dbb13d904bb01cc6883de9dac,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.72
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 7252491003725926521, guid: 9d91629dbb13d904bb01cc6883de9dac,
         type: 3}

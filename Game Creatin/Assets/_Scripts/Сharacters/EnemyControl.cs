@@ -420,6 +420,10 @@ public class EnemyControl : MonoBehaviour, IControl
                     _hexagonMain = hex;
                     _hexagonMain.Contact(IMoveMain);
                 }
+                Vector3 Pos = _individualObj.position;
+                Pos.z = -0.7f * _hexagonMain.Row;
+                Debug.Log(Pos);
+                _individualObj.position = Pos;
 
                 RecordApproac();
                 TravelMessage();

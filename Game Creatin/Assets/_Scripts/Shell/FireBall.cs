@@ -27,7 +27,7 @@ public class FireBall : MonoBehaviour, IShell
             List<RaycastHit2D> hits2D = new List<RaycastHit2D>();
             ContactFilter2D contactFilter2D = new ContactFilter2D();
             contactFilter2D.useTriggers = true;
-            CastFair();
+            //CastFair();
             Physics2D.CircleCast(transform.position, _fireRange, Vector2.zero, contactFilter2D, hits2D);
             for (int i = 0; i < hits2D.Count; i++)
             {
